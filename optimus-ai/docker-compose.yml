@@ -68,6 +68,31 @@ services:
     networks:
       - optimus_network
 
+  optimization-engine:
+    build: 
+      context: ./services/optimization-engine
+    container_name: optimus_optimization_engine
+    ports:
+      - "8002:8000"
+    environment:
+      REDIS_URL: "redis://redis:6379/0"
+    depends_on:
+      - redis
+    networks:
+      - optimus_network
+
+  optimization-worker:
+    build: 
+      context: ./services/optimization-engine
+    container_name: optimus_optimization_worker
+    command: celery -A app.worker:celery_app worker --loglevel=info
+    environment:
+      REDIS_URL: "redis://redis:6379/0"
+    depends_on:
+      - redis
+    networks:
+      - optimus_network
+
 volumes:
   postgres_data:
   redis_data:
