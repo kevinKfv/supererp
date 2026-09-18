@@ -17,6 +17,15 @@ El sistema se compone de múltiples microservicios implementados en Python (Fast
 - **Optimization Engine**: Microservicio dedicado a la resolución de problemas matemáticos complejos (MIP, CP, LP).
 - **Procesamiento Asíncrono**: Integración con Celery y Redis para resolver modelos (como el Problema de Asignación vía Google OR-Tools) en *background* sin bloquear la API REST.
 
+#### Fase 3: Motor Predictivo
+- **Prediction Engine**: Microservicio para entrenar e inferir modelos de Machine Learning.
+- **Modelos**: Uso de XGBoost y scikit-learn para predicciones de ventas.
+- **Model Registry**: Almacenamiento seguro de modelos binarios (`.joblib`) directamente en MinIO.
+
+#### Fase 4: Motor de Simulación
+- **Simulation Engine**: Microservicio para evaluar riesgos y calcular rentabilidad.
+- **Monte Carlo**: Simulación matemática vectorizada con NumPy capaz de correr miles de iteraciones para *What-If Analysis* y cálculo de percentiles de riesgo.
+
 ## Cómo ejecutar
 
 Asegúrate de tener Docker y Docker Compose instalados.

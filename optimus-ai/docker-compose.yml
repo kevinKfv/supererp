@@ -93,6 +93,30 @@ services:
     networks:
       - optimus_network
 
+  prediction-engine:
+    build: 
+      context: ./services/prediction-engine
+    container_name: optimus_prediction_engine
+    ports:
+      - "8003:8000"
+    environment:
+      MINIO_URL: "minio:9000"
+      MINIO_ACCESS_KEY: "optimus_admin"
+      MINIO_SECRET_KEY: "optimus_password"
+    depends_on:
+      - minio
+    networks:
+      - optimus_network
+
+  simulation-engine:
+    build: 
+      context: ./services/simulation-engine
+    container_name: optimus_simulation_engine
+    ports:
+      - "8004:8000"
+    networks:
+      - optimus_network
+
 volumes:
   postgres_data:
   redis_data:
