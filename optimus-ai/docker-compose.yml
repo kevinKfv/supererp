@@ -117,6 +117,15 @@ services:
     networks:
       - optimus_network
 
+  rules-engine:
+    build: 
+      context: ./services/rules-engine
+    container_name: optimus_rules_engine
+    ports:
+      - "8005:8000"
+    networks:
+      - optimus_network
+
 volumes:
   postgres_data:
   redis_data:

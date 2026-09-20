@@ -26,6 +26,10 @@ El sistema se compone de múltiples microservicios implementados en Python (Fast
 - **Simulation Engine**: Microservicio para evaluar riesgos y calcular rentabilidad.
 - **Monte Carlo**: Simulación matemática vectorizada con NumPy capaz de correr miles de iteraciones para *What-If Analysis* y cálculo de percentiles de riesgo.
 
+#### Fase 5: Motor de Reglas
+- **Rules Engine**: Microservicio para validar lógicas de negocio de manera dinámica.
+- **JSON AST**: Evaluador puro en Python que lee reglas en formato JSON, permitiendo que el equipo de negocio configure reglas sin tocar el código fuente.
+
 ## Cómo ejecutar
 
 Asegúrate de tener Docker y Docker Compose instalados.
