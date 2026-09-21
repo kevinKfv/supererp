@@ -30,6 +30,11 @@ El sistema se compone de múltiples microservicios implementados en Python (Fast
 - **Rules Engine**: Microservicio para validar lógicas de negocio de manera dinámica.
 - **JSON AST**: Evaluador puro en Python que lee reglas en formato JSON, permitiendo que el equipo de negocio configure reglas sin tocar el código fuente.
 
+#### Fase 6: Knowledge Engine (Asistente de IA)
+- **Knowledge Engine**: Cerebro cognitivo que expone capacidades de procesamiento de lenguaje natural (NLP).
+- **Explainable AI (XAI)**: Generación de justificaciones en lenguaje natural para explicar cómo la IA entiende y qué decisiones toma.
+- **Base de Datos Vectorial**: Integración con Qdrant para proveer capacidades de RAG (Retrieval-Augmented Generation) a los agentes.
+
 ## Cómo ejecutar
 
 Asegúrate de tener Docker y Docker Compose instalados.
