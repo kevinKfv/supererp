@@ -35,6 +35,11 @@ El sistema se compone de múltiples microservicios implementados en Python (Fast
 - **Explainable AI (XAI)**: Generación de justificaciones en lenguaje natural para explicar cómo la IA entiende y qué decisiones toma.
 - **Base de Datos Vectorial**: Integración con Qdrant para proveer capacidades de RAG (Retrieval-Augmented Generation) a los agentes.
 
+#### Fase 7: Frontend (Panel Visual)
+- **Dashboard Enterprise**: Interfaz visual ultra-moderna desarrollada con **React, Vite y TailwindCSS**.
+- **Dark Mode & Glassmorphism**: Estética premium adaptada para centros de comando de Inteligencia Artificial.
+- **Integración API**: Conexión con los microservicios backend para visualizar métricas e interactuar con el Knowledge Engine (Chat de IA).
+
 ## Cómo ejecutar
 
 Asegúrate de tener Docker y Docker Compose instalados.
