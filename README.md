@@ -40,6 +40,11 @@ El sistema se compone de múltiples microservicios implementados en Python (Fast
 - **Dark Mode & Glassmorphism**: Estética premium adaptada para centros de comando de Inteligencia Artificial.
 - **Integración API**: Conexión con los microservicios backend para visualizar métricas e interactuar con el Knowledge Engine (Chat de IA).
 
+#### Fase 8: Observabilidad (Telemetría)
+- **Métricas y Scrape**: Integración de **Prometheus** para la recolección automática de métricas de rendimiento y salud de los microservicios.
+- **Instrumentación**: El `gateway-service` expone métricas HTTP detalladas automáticamente (latencia, contadores de errores, RPS).
+- **Visualización**: Incorporación de **Grafana** para la creación de Dashboards analíticos que permiten monitorear la infraestructura en tiempo real.
+
 ## Cómo ejecutar
 
 Asegúrate de tener Docker y Docker Compose instalados.

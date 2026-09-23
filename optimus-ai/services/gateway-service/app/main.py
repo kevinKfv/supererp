@@ -1,5 +1,7 @@
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from prometheus_fastapi_instrumentator import Instrumentator
 import httpx
 
 app = FastAPI(
@@ -7,6 +9,9 @@ app = FastAPI(
     description="Punto de entrada único para todos los servicios de OptimusAI. Autentica y enruta peticiones.",
     version="1.0.0",
 )
+
+# Inicializar Instrumentación de Prometheus para monitorear métricas HTTP
+Instrumentator().instrument(app).expose(app)
 
 @app.get("/health")
 async def health_check():

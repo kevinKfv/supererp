@@ -162,11 +162,36 @@ services:
       - ./frontend:/app
       - /app/node_modules
 
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: optimus_prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - optimus_network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: optimus_grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - optimus_network
+    depends_on:
+      - prometheus
+
 volumes:
   postgres_data:
   redis_data:
   minio_data:
   qdrant_data:
+  prometheus_data:
+  grafana_data:
 
 networks:
   optimus_network:
