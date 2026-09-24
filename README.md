@@ -45,6 +45,11 @@ El sistema se compone de múltiples microservicios implementados en Python (Fast
 - **Instrumentación**: El `gateway-service` expone métricas HTTP detalladas automáticamente (latencia, contadores de errores, RPS).
 - **Visualización**: Incorporación de **Grafana** para la creación de Dashboards analíticos que permiten monitorear la infraestructura en tiempo real.
 
+#### Fase 9: Despliegue en Kubernetes (Cloud-Native)
+- **Migración a K8s**: Conversión de la arquitectura local (`docker-compose`) a Manifiestos YAML para Kubernetes, aislando recursos en el namespace `optimus-ai`.
+- **Escalabilidad Horizontal**: Configuración de `Deployments` con múltiples réplicas (ej: Gateway) para manejar alta concurrencia.
+- **Redes y Seguridad**: Uso de `ClusterIP` para comunicación interna segura y `LoadBalancer` para exponer el Frontend y el Gateway hacia el exterior.
+
 ## Cómo ejecutar
 
 Asegúrate de tener Docker y Docker Compose instalados.

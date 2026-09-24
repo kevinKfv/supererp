@@ -1,0 +1,121 @@
+# Gateway Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-service
+  namespace: optimus-ai
+spec:
+  replicas: 2 # Scale out gateway
+  selector:
+    matchLabels:
+      app: gateway-service
+  template:
+    metadata:
+      labels:
+        app: gateway-service
+    spec:
+      containers:
+        - name: gateway-service
+          image: optimus-gateway:latest
+          imagePullPolicy: Never # Local image for PoC
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: optimus-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-service
+  namespace: optimus-ai
+spec:
+  type: LoadBalancer # Expose to outside
+  selector:
+    app: gateway-service
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+
+---
+# Identity Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identity-service
+  namespace: optimus-ai
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: identity-service
+  template:
+    metadata:
+      labels:
+        app: identity-service
+    spec:
+      containers:
+        - name: identity-service
+          image: optimus-identity:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: optimus-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: identity-service
+  namespace: optimus-ai
+spec:
+  type: ClusterIP
+  selector:
+    app: identity-service
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+
+---
+# Knowledge Engine
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: knowledge-engine
+  namespace: optimus-ai
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: knowledge-engine
+  template:
+    metadata:
+      labels:
+        app: knowledge-engine
+    spec:
+      containers:
+        - name: knowledge-engine
+          image: optimus-knowledge:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: optimus-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: knowledge-engine
+  namespace: optimus-ai
+spec:
+  type: ClusterIP
+  selector:
+    app: knowledge-engine
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000

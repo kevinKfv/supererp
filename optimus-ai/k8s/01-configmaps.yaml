@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: optimus-config
+  namespace: optimus-ai
+data:
+  # Database URLs (using Kubernetes internal DNS)
+  POSTGRES_USER: "optimus"
+  POSTGRES_DB: "optimus_db"
+  DATABASE_URL: "postgresql://optimus:changeme@postgres:5432/optimus_db"
+  REDIS_URL: "redis://redis:6379/0"
+  QDRANT_HOST: "qdrant"
+  QDRANT_PORT: "6333"
+  
+  # Microservices URLs
+  IDENTITY_SERVICE_URL: "http://identity-service:8000"
+  OPTIMIZATION_SERVICE_URL: "http://optimization-service:8000"
+  PREDICTION_SERVICE_URL: "http://prediction-service:8000"
+  SIMULATION_SERVICE_URL: "http://simulation-engine:8000"
+  RULES_SERVICE_URL: "http://rules-engine:8000"
+  KNOWLEDGE_SERVICE_URL: "http://knowledge-engine:8000"
+  
+  # JWT Secrets (In a real enterprise environment, use Kubernetes Secrets or Vault)
+  SECRET_KEY: "super-secret-key-enterprise"
+  ALGORITHM: "HS256"
