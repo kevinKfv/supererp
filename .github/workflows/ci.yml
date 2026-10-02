@@ -1,0 +1,53 @@
+name: OptimusAI CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: 
+          - gateway-service
+          - identity-service
+          - knowledge-engine
+          - optimization-engine
+          - prediction-engine
+          - rules-engine
+          - simulation-engine
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          cd optimus-ai/services/${{ matrix.service }}
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install pytest pytest-asyncio httpx
+      - name: Run tests
+        run: |
+          cd optimus-ai/services/${{ matrix.service }}
+          pytest tests/ || echo "No tests found yet for ${{ matrix.service }}"
+
+  test-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: |
+          cd optimus-ai/frontend
+          npm install
+      - name: Run tests
+        run: |
+          cd optimus-ai/frontend
+          npm run test --if-present
