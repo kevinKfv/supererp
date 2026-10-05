@@ -4,14 +4,14 @@ import { LayoutDashboard, BrainCircuit, Activity, Bot, Database, Menu, X } from 
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Inicio' },
-  { to: '/optimization', icon: Activity, label: 'Optimización', upcoming: true },
-  { to: '/prediction', icon: Database, label: 'Predicción', upcoming: true },
+  { to: '/optimization', icon: Activity, label: 'Optimización', demo: true },
+  { to: '/prediction', icon: Database, label: 'Predicción', demo: true },
   { to: '/chat', icon: Bot, label: 'Interpretar instrucciones' },
 ];
 
 const Navigation = ({ onNavigate }: { onNavigate?: () => void }) => (
   <nav aria-label="Navegación principal" className="flex flex-col gap-1">
-    {navItems.map(({ to, icon: Icon, label, upcoming }) => (
+    {navItems.map(({ to, icon: Icon, label, demo }) => (
       <NavLink
         key={to}
         to={to}
@@ -26,7 +26,7 @@ const Navigation = ({ onNavigate }: { onNavigate?: () => void }) => (
       >
         <Icon size={19} aria-hidden="true" className="shrink-0" />
         <span className="flex-1">{label}</span>
-        {upcoming && <span className="text-xs font-normal text-gray-400">Próximamente</span>}
+        {demo && <span className="text-xs font-normal text-gray-400">Demo</span>}
       </NavLink>
     ))}
   </nav>
