@@ -1,0 +1,124 @@
+{
+    "clientes": [
+        {
+            "client_id": "C001",
+            "annual_income": 111935,
+            "credit_score": 416,
+            "years_as_customer": 14
+        },
+        {
+            "client_id": "C002",
+            "annual_income": 61594,
+            "credit_score": 486,
+            "years_as_customer": 3
+        },
+        {
+            "client_id": "C003",
+            "annual_income": 108534,
+            "credit_score": 441,
+            "years_as_customer": 0
+        },
+        {
+            "client_id": "C004",
+            "annual_income": 132498,
+            "credit_score": 413,
+            "years_as_customer": 3
+        },
+        {
+            "client_id": "C005",
+            "annual_income": 37379,
+            "credit_score": 807,
+            "years_as_customer": 13
+        },
+        {
+            "client_id": "C006",
+            "annual_income": 86104,
+            "credit_score": 836,
+            "years_as_customer": 10
+        },
+        {
+            "client_id": "C007",
+            "annual_income": 86436,
+            "credit_score": 716,
+            "years_as_customer": 0
+        },
+        {
+            "client_id": "C008",
+            "annual_income": 55218,
+            "credit_score": 401,
+            "years_as_customer": 9
+        },
+        {
+            "client_id": "C009",
+            "annual_income": 97010,
+            "credit_score": 613,
+            "years_as_customer": 9
+        },
+        {
+            "client_id": "C010",
+            "annual_income": 75608,
+            "credit_score": 468,
+            "years_as_customer": 5
+        },
+        {
+            "client_id": "C011",
+            "annual_income": 147406,
+            "credit_score": 743,
+            "years_as_customer": 10
+        },
+        {
+            "client_id": "C012",
+            "annual_income": 139687,
+            "credit_score": 673,
+            "years_as_customer": 14
+        },
+        {
+            "client_id": "C013",
+            "annual_income": 117380,
+            "credit_score": 613,
+            "years_as_customer": 2
+        },
+        {
+            "client_id": "C014",
+            "annual_income": 83081,
+            "credit_score": 625,
+            "years_as_customer": 8
+        },
+        {
+            "client_id": "C015",
+            "annual_income": 144568,
+            "credit_score": 798,
+            "years_as_customer": 2
+        },
+        {
+            "client_id": "C016",
+            "annual_income": 94851,
+            "credit_score": 713,
+            "years_as_customer": 4
+        },
+        {
+            "client_id": "C017",
+            "annual_income": 23432,
+            "credit_score": 501,
+            "years_as_customer": 11
+        },
+        {
+            "client_id": "C018",
+            "annual_income": 49388,
+            "credit_score": 597,
+            "years_as_customer": 9
+        },
+        {
+            "client_id": "C019",
+            "annual_income": 46008,
+            "credit_score": 414,
+            "years_as_customer": 10
+        },
+        {
+            "client_id": "C020",
+            "annual_income": 33422,
+            "credit_score": 637,
+            "years_as_customer": 7
+        }
+    ]
+}

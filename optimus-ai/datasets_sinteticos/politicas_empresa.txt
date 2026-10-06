@@ -1,0 +1,10 @@
+Política de Descuentos Corporativos:
+1. Los clientes con más de 5 años de antigüedad tienen un descuento automático del 10% en licencias nuevas.
+2. Las implementaciones que superen los $50,000 USD requieren aprobación del gerente regional.
+
+Normativas de Asignación de Personal:
+- Ningún empleado debe ser asignado a un proyecto cuyo costo de traslado supere los $1,000 USD mensuales.
+- Se debe priorizar al personal con certificación AWS para proyectos de infraestructura cloud.
+
+Manejo de Riesgo (Monte Carlo):
+- Un proyecto es considerado "Alto Riesgo" si el percentil 5 de rentabilidad en la simulación es negativo.

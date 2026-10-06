@@ -1,0 +1,20 @@
+{
+    "projects": [
+        {
+            "id": "PROY-001",
+            "name": "Expansión Mercado Latam",
+            "cost_mean": 500000,
+            "cost_std_dev": 50000,
+            "revenue_mean": 800000,
+            "revenue_std_dev": 120000
+        },
+        {
+            "id": "PROY-002",
+            "name": "Nuevo Software ERP",
+            "cost_mean": 200000,
+            "cost_std_dev": 15000,
+            "revenue_mean": 250000,
+            "revenue_std_dev": 80000
+        }
+    ]
+}
