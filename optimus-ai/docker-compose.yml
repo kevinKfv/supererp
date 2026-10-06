@@ -1,6 +1,35 @@
 version: '3.8'
 
 services:
+  gateway-service:
+    build: 
+      context: ./services/gateway-service
+    container_name: optimus_gateway
+    ports:
+      - "8000:8000"
+    networks:
+      - optimus_network
+    depends_on:
+      - identity-service
+      - optimization-engine
+      - prediction-engine
+      - simulation-engine
+      - rules-engine
+      - knowledge-engine
+
+  identity-service:
+    build: 
+      context: ./services/identity-service
+    container_name: optimus_identity
+    ports:
+      - "8001:8000"
+    environment:
+      DATABASE_URL: "postgresql://optimus:optimus_password@postgres:5432/optimus_identity"
+    depends_on:
+      - postgres
+    networks:
+      - optimus_network
+
   postgres:
     image: postgres:15-alpine
     container_name: optimus_postgres

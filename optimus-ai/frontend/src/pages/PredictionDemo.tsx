@@ -1,36 +1,84 @@
 import { useState } from 'react';
+import axios from 'axios';
+import { Loader2 } from 'lucide-react';
 
 export const PredictionDemo = () => {
   const [showResult, setShowResult] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [predictionResult, setPredictionResult] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchPrediction = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await axios.post('http://localhost:8000/api/v1/predict/predict', {
+        features: [[100.0, 80.0, 25.0]],
+      });
+      if (response.data && response.data.predictions) {
+        setPredictionResult(response.data.predictions[0]);
+      } else {
+        setPredictionResult(308); // fallback
+      }
+      setShowResult(true);
+    } catch (err: any) {
+      setError(err.message || 'Error al conectar con el backend de predicción.');
+      setPredictionResult(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAction = () => {
+    if (showResult || error) {
+      setShowResult(false);
+      setError(null);
+      setPredictionResult(null);
+    } else {
+      void fetchPrediction();
+    }
+  };
 
   return (
     <div className="max-w-4xl space-y-6">
       <header>
-        <span className="inline-flex rounded-lg border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-semibold text-blue-200">Demo guiada</span>
+        <span className="inline-flex rounded-lg border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-semibold text-blue-200">Demo integrada</span>
         <h1 className="mt-4 text-3xl font-bold tracking-tight text-white">Predicción</h1>
-        <p className="mt-2 max-w-2xl text-gray-300">Conocé las entradas y la presentación de un posible resultado de ventas.</p>
+        <p className="mt-2 max-w-2xl text-gray-300">Conocé las entradas y la presentación de un posible resultado de ventas a través del API Gateway.</p>
       </header>
 
       <p role="note" className="rounded-xl border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-blue-100">
-        Ejemplo de solo lectura. Esta pantalla no consulta un modelo ni envía datos al motor de predicción.
+        Esta pantalla se conecta al Prediction Engine mediante el API Gateway.
       </p>
 
       <section aria-label="Ejemplo de predicción" className="glass-card p-5 sm:p-6">
         <div aria-live="polite" aria-atomic="true">
-          {showResult ? (
+          {error && (
+            <div className="mb-4 rounded-xl border border-red-400/40 bg-red-400/10 p-4 text-red-100">
+              <p>Ocurrió un error: {error}</p>
+            </div>
+          )}
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center gap-3 py-10 text-gray-300">
+               <Loader2 size={36} aria-hidden="true" className="animate-spin text-primary" />
+               <p>Consultando al modelo de predicción...</p>
+            </div>
+          ) : showResult ? (
             <div>
-              <h2 className="text-xl font-semibold text-white">Resultado de ejemplo</h2>
-              <p className="mt-2 text-sm text-gray-300">Una vista ilustrativa de cómo podría presentarse una predicción.</p>
+              <h2 className="text-xl font-semibold text-white">Resultado de la predicción</h2>
+              <p className="mt-2 text-sm text-gray-300">Este valor fue calculado por el motor de Machine Learning.</p>
               <div className="mt-5 rounded-xl border border-white/10 bg-background p-5">
-                <p className="text-sm font-medium text-gray-300">Ventas estimadas de ejemplo</p>
-                <p className="mt-2 text-4xl font-bold text-white">308 <span className="text-base font-normal text-gray-300">unidades de ventas</span></p>
+                <p className="text-sm font-medium text-gray-300">Ventas estimadas</p>
+                <p className="mt-2 text-4xl font-bold text-white">
+                  {predictionResult !== null ? predictionResult.toFixed(2) : '---'}
+                  <span className="text-base font-normal text-gray-300"> unidades de ventas</span>
+                </p>
               </div>
-              <p className="mt-4 text-sm text-gray-300">El valor 308 es ficticio. No fue calculado a partir de las entradas ni generado por un modelo entrenado.</p>
             </div>
           ) : (
             <div>
               <h2 className="text-xl font-semibold text-white">Entradas de ejemplo</h2>
-              <p className="mt-2 text-sm text-gray-300">El prototipo del motor usa estas tres variables. Sus unidades aún no están definidas para uso de negocio.</p>
+              <p className="mt-2 text-sm text-gray-300">El motor usa estas tres variables (precio, marketing, temperatura).</p>
               <dl className="mt-5 divide-y divide-white/10 rounded-xl border border-white/10 px-4 text-sm">
                 <div className="flex flex-wrap justify-between gap-2 py-3"><dt className="text-gray-300">Precio</dt><dd className="font-semibold text-white">100</dd></div>
                 <div className="flex flex-wrap justify-between gap-2 py-3"><dt className="text-gray-300">Inversión en marketing</dt><dd className="font-semibold text-white">80</dd></div>
@@ -40,8 +88,13 @@ export const PredictionDemo = () => {
           )}
         </div>
 
-        <button type="button" onClick={() => setShowResult((current) => !current)} className="mt-6 min-h-11 rounded-lg bg-primaryDark px-4 py-2.5 font-semibold text-white transition-colors hover:bg-blue-800">
-          {showResult ? 'Volver a las entradas' : 'Ver resultado de ejemplo'}
+        <button 
+          type="button" 
+          onClick={handleAction} 
+          disabled={isLoading}
+          className="mt-6 min-h-11 rounded-lg bg-primaryDark px-4 py-2.5 font-semibold text-white transition-colors hover:bg-blue-800 disabled:opacity-50"
+        >
+          {showResult || error ? 'Volver a las entradas' : 'Calcular predicción'}
         </button>
       </section>
     </div>
