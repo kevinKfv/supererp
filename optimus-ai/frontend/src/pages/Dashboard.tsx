@@ -65,7 +65,7 @@ export const Dashboard = () => (
 
       <section aria-labelledby="modules-title" className="glass-card p-5 sm:p-6">
         <h2 id="modules-title" className="text-xl font-semibold text-white">Demos disponibles</h2>
-        <p className="mt-1 text-sm text-gray-400">Recorré ejemplos sin iniciar análisis reales.</p>
+        <p className="mt-1 text-sm text-gray-400">Explorá funciones con entradas de ejemplo. Optimización ejecuta un cálculo real.</p>
         <div className="mt-5 space-y-3">
           <Link to="/optimization" className="flex min-h-11 items-center justify-between gap-3 rounded-lg border border-white/10 px-4 py-3 text-sm text-gray-200 transition-colors hover:bg-white/5">
             Optimización <ArrowRight size={18} aria-hidden="true" />

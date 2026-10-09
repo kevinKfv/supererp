@@ -1,7 +1,7 @@
 from ortools.linear_solver import pywraplp
 from typing import List, Dict, Any
 
-def solve_assignment_problem(costs: List[List[float]]) -> Dict[str, Any]:
+def solve_assignment_problem(costs: List[List[float]], allowed: List[List[bool]] | None = None) -> Dict[str, Any]:
     """
     Resuelve el problema clásico de asignación utilizando OR-Tools (MIP Solver).
     :param costs: Matriz N x M donde costs[i][j] es el costo de asignar el trabajador i a la tarea j.
@@ -19,7 +19,7 @@ def solve_assignment_problem(costs: List[List[float]]) -> Dict[str, Any]:
     x = {}
     for i in range(num_workers):
         for j in range(num_tasks):
-            x[i, j] = solver.IntVar(0, 1, f'worker_{i}_task_{j}')
+            x[i, j] = solver.IntVar(0, 1 if allowed is None or allowed[i][j] else 0, f'worker_{i}_task_{j}')
 
     # Restricción 1: Cada trabajador es asignado a como máximo una tarea.
     for i in range(num_workers):

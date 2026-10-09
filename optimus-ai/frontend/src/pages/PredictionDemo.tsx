@@ -11,26 +11,27 @@ export const PredictionDemo = () => {
   const fetchPrediction = async () => {
     setIsLoading(true);
     setError(null);
+    setPredictionResult(null);
     try {
       const response = await axios.post('http://localhost:8000/api/v1/predict/predict', {
         features: [[100.0, 80.0, 25.0]],
       });
-      if (response.data && response.data.predictions) {
-        setPredictionResult(response.data.predictions[0]);
-      } else {
-        setPredictionResult(308); // fallback
+      const prediction = response.data?.predictions?.[0];
+      if (typeof prediction !== 'number' || !Number.isFinite(prediction)) {
+        setError('El servicio no devolvió una predicción válida. Intentá nuevamente.');
+        return;
       }
+      setPredictionResult(prediction);
       setShowResult(true);
-    } catch (err: any) {
-      setError(err.message || 'Error al conectar con el backend de predicción.');
-      setPredictionResult(null);
+    } catch {
+      setError('No se pudo calcular la predicción en este momento. Intentá nuevamente más tarde.');
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleAction = () => {
-    if (showResult || error) {
+    if (showResult) {
       setShowResult(false);
       setError(null);
       setPredictionResult(null);
@@ -55,7 +56,7 @@ export const PredictionDemo = () => {
         <div aria-live="polite" aria-atomic="true">
           {error && (
             <div className="mb-4 rounded-xl border border-red-400/40 bg-red-400/10 p-4 text-red-100">
-              <p>Ocurrió un error: {error}</p>
+              <p>{error}</p>
             </div>
           )}
           {isLoading ? (
@@ -63,14 +64,14 @@ export const PredictionDemo = () => {
                <Loader2 size={36} aria-hidden="true" className="animate-spin text-primary" />
                <p>Consultando al modelo de predicción...</p>
             </div>
-          ) : showResult ? (
+          ) : showResult && predictionResult !== null ? (
             <div>
               <h2 className="text-xl font-semibold text-white">Resultado de la predicción</h2>
               <p className="mt-2 text-sm text-gray-300">Este valor fue calculado por el motor de Machine Learning.</p>
               <div className="mt-5 rounded-xl border border-white/10 bg-background p-5">
                 <p className="text-sm font-medium text-gray-300">Ventas estimadas</p>
                 <p className="mt-2 text-4xl font-bold text-white">
-                  {predictionResult !== null ? predictionResult.toFixed(2) : '---'}
+                  {predictionResult.toFixed(2)}
                   <span className="text-base font-normal text-gray-300"> unidades de ventas</span>
                 </p>
               </div>
@@ -94,7 +95,7 @@ export const PredictionDemo = () => {
           disabled={isLoading}
           className="mt-6 min-h-11 rounded-lg bg-primaryDark px-4 py-2.5 font-semibold text-white transition-colors hover:bg-blue-800 disabled:opacity-50"
         >
-          {showResult || error ? 'Volver a las entradas' : 'Calcular predicción'}
+          {showResult ? 'Volver a las entradas' : error ? 'Reintentar predicción' : 'Calcular predicción'}
         </button>
       </section>
     </div>

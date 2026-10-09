@@ -11,9 +11,9 @@ celery_app = Celery(
 )
 
 @celery_app.task(name="optimize_assignment")
-def optimize_assignment_task(costs: list):
+def optimize_assignment_task(costs: list, allowed: list | None = None):
     """
     Tarea asíncrona de Celery para resolver el problema de asignación.
     """
-    result = solve_assignment_problem(costs)
+    result = solve_assignment_problem(costs, allowed)
     return result
