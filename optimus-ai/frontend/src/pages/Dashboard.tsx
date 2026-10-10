@@ -15,35 +15,32 @@ const activity = [
 ];
 
 export const Dashboard = () => (
-  <div className="space-y-8">
+  <div className="space-y-6">
     <header className="flex flex-wrap items-start justify-between gap-5">
       <div className="max-w-2xl">
         <h1 className="text-3xl font-bold tracking-tight text-white">Inicio</h1>
-        <p className="mt-2 text-gray-300">Explorá las capacidades actuales de OptimusAI.</p>
+        <p className="mt-2 text-gray-300">Elegí una función para empezar.</p>
       </div>
       <Link to="/chat" className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-primaryDark px-4 py-2.5 font-semibold text-white transition-colors hover:bg-blue-800">
-        Interpretar una instrucción <ArrowRight size={18} aria-hidden="true" />
+        Interpretar instrucción <ArrowRight size={18} aria-hidden="true" />
       </Link>
     </header>
 
     <div className="rounded-xl border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-blue-100" role="note">
-      <strong>Datos de demostración.</strong> Las cifras y actividades siguientes son ejemplos; no representan ejecuciones reales.
+      <strong>Datos de demostración.</strong> Los indicadores y la actividad no representan ejecuciones reales.
     </div>
 
     <section aria-labelledby="metrics-title" className="space-y-4">
-      <div>
-        <h2 id="metrics-title" className="text-xl font-semibold text-white">Indicadores de ejemplo</h2>
-        <p className="mt-1 text-sm text-gray-400">Valores ilustrativos del aspecto que podría tener un resumen operativo.</p>
-      </div>
+      <h2 id="metrics-title" className="text-xl font-semibold text-white">Indicadores</h2>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {metrics.map(({ title, value, change, icon: Icon }) => (
           <div key={title} className="glass-card min-w-0 p-5">
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex min-h-10 items-start justify-between gap-3">
               <h3 className="text-sm font-medium text-gray-300">{title}</h3>
               <Icon size={20} aria-hidden="true" className="shrink-0 text-primary" />
             </div>
             <p className="mt-3 text-3xl font-bold tracking-tight text-white">{value}</p>
-            <p className="mt-2 text-sm text-gray-400">Variación de ejemplo: {change}</p>
+            <p className="mt-2 text-sm text-gray-400">Variación: {change}</p>
           </div>
         ))}
       </div>
@@ -51,8 +48,7 @@ export const Dashboard = () => (
 
     <div className="grid gap-4 lg:grid-cols-2">
       <section aria-labelledby="activity-title" className="glass-card p-5 sm:p-6">
-        <h2 id="activity-title" className="text-xl font-semibold text-white">Actividad de ejemplo</h2>
-        <p className="mt-1 text-sm text-gray-400">Eventos simulados para mostrar la presentación de actividad.</p>
+        <h2 id="activity-title" className="text-xl font-semibold text-white">Actividad</h2>
         <ul className="mt-5 divide-y divide-white/10">
           {activity.map((item) => (
             <li key={item} className="flex gap-3 py-3 text-sm text-gray-200">
@@ -64,8 +60,8 @@ export const Dashboard = () => (
       </section>
 
       <section aria-labelledby="modules-title" className="glass-card p-5 sm:p-6">
-        <h2 id="modules-title" className="text-xl font-semibold text-white">Demos disponibles</h2>
-        <p className="mt-1 text-sm text-gray-400">Explorá funciones con entradas de ejemplo. Optimización ejecuta un cálculo real.</p>
+        <h2 id="modules-title" className="text-xl font-semibold text-white">Funciones disponibles</h2>
+        <p className="mt-1 text-sm text-gray-300">Optimización calcula una solución; Predicción usa un caso de ejemplo.</p>
         <div className="mt-5 space-y-3">
           <Link to="/optimization" className="flex min-h-11 items-center justify-between gap-3 rounded-lg border border-white/10 px-4 py-3 text-sm text-gray-200 transition-colors hover:bg-white/5">
             Optimización <ArrowRight size={18} aria-hidden="true" />

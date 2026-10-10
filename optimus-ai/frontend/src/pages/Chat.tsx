@@ -20,14 +20,14 @@ export const Chat = () => {
       });
       setMessages((previous) => [...previous, {
         role: 'assistant',
-        content: 'Instrucción interpretada. Revisá los datos extraídos para confirmar si coinciden con lo que quisiste decir.',
+        content: 'Instrucción interpretada. Revisá los datos extraídos.',
         data: response.data.extracted_intent,
         explanation: response.data.explanation,
       }]);
     } catch {
       setMessages((previous) => [...previous, {
         role: 'assistant',
-        content: 'No se pudo interpretar la instrucción. El servicio puede no estar disponible.',
+        content: 'No se pudo interpretar la instrucción.',
         isError: true,
         retryText: text,
       }]);
@@ -52,20 +52,18 @@ export const Chat = () => {
   };
 
   return (
-    <div className="flex min-h-[calc(100dvh-7rem)] flex-col gap-6 md:h-[calc(100vh-4rem)] md:min-h-0">
+    <div className={`flex max-w-4xl flex-col gap-6 ${messages.length ? 'min-h-[calc(100dvh-7rem)] md:h-[calc(100vh-4rem)] md:min-h-0' : ''}`}>
       <header>
         <h1 className="text-3xl font-bold tracking-tight text-white">Interpretar instrucciones</h1>
-        <p className="mt-2 max-w-2xl text-gray-300">
-          Escribí una solicitud para ver cómo la interpreta el sistema. Esta función no ejecuta optimizaciones, simulaciones ni otros análisis.
-        </p>
+        <p className="mt-2 max-w-2xl text-gray-300">Escribí una instrucción para ver cómo la entiende el sistema. No ejecuta análisis.</p>
       </header>
 
-      <section aria-label="Interpretación de instrucciones" className="glass-card flex min-h-[24rem] min-w-0 flex-1 flex-col overflow-hidden">
+      <section aria-label="Interpretación de instrucciones" className={`glass-card flex min-w-0 flex-col overflow-hidden ${messages.length ? 'min-h-[24rem] flex-1' : 'min-h-[18rem]'}`}>
         <div role="log" aria-label="Conversación" aria-live="polite" aria-relevant="additions" className="min-h-0 flex-1 space-y-5 overflow-y-auto p-4 sm:p-6">
           {messages.length === 0 && (
             <div className="flex h-full flex-col items-center justify-center gap-3 text-center text-gray-300">
               <Bot size={36} aria-hidden="true" className="text-primary" />
-              <p>Probá con: «Reducí costos un 15 %».</p>
+              <p>Probá con «Reducí costos».</p>
             </div>
           )}
 
@@ -83,17 +81,11 @@ export const Chat = () => {
               }`} role={message.role === 'assistant' && message.isError ? 'alert' : undefined}>
                 <p className="mb-1 text-xs font-semibold text-gray-300">{message.role === 'user' ? 'Vos' : message.isError ? 'Error' : 'Interpretación'}</p>
                 <p className="break-words">{message.content}</p>
-                {message.role === 'assistant' && !message.isError && (
-                  <p className="mt-3 text-xs text-gray-400">Interpretación únicamente. No se ejecutó ningún análisis.</p>
-                )}
                 {message.role === 'assistant' && message.data != null && (
                   <details className="mt-3 max-w-full">
                     <summary className="cursor-pointer text-sm font-medium text-blue-300">Ver detalle de la interpretación</summary>
                     {message.explanation && (
-                      <div className="mt-2 break-words text-gray-300">
-                        <p>El texto del servicio puede mencionar acciones futuras que esta pantalla no ejecuta:</p>
-                        <p className="mt-1">«{message.explanation}»</p>
-                      </div>
+                      <p className="mt-2 break-words text-gray-300">{message.explanation}</p>
                     )}
                     <pre className="mt-2 max-w-full overflow-x-auto rounded-lg bg-black/30 p-3 text-xs text-gray-300">{JSON.stringify(message.data, null, 2)}</pre>
                   </details>
@@ -124,7 +116,7 @@ export const Chat = () => {
                 type="text"
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
-                placeholder="Ej.: Reducí costos un 15 %"
+                placeholder="Escribí acá"
                 className="premium-input min-h-11 pr-16"
                 disabled={isLoading}
               />

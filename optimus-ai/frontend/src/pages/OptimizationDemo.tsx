@@ -96,10 +96,10 @@ const findAssignmentConflict = (allowed: boolean[][]): { tasks: number[]; worker
 
 const explainAssignmentConflict = (allowed: boolean[][], workerNames: string[], taskNames: string[]): string | null => {
   const taskWithoutWorker = taskNames.findIndex((_, task) => allowed.every((row) => !row[task]));
-  if (taskWithoutWorker >= 0) return `${taskNames[taskWithoutWorker] || 'Tarea ' + (taskWithoutWorker + 1)} no tiene trabajadores permitidos.`;
+  if (taskWithoutWorker >= 0) return `${taskNames[taskWithoutWorker] || 'Tarea ' + (taskWithoutWorker + 1)} no tiene empleados permitidos.`;
   const conflict = allowed.length >= taskNames.length ? findAssignmentConflict(allowed) : null;
   if (!conflict) return null;
-  return `Las tareas ${conflict.tasks.map((task) => taskNames[task] || 'Tarea ' + (task + 1)).join(', ')} comparten solo ${conflict.workers.length} ${conflict.workers.length === 1 ? 'trabajador compatible' : 'trabajadores compatibles'} (${conflict.workers.map((worker) => workerNames[worker] || 'Trabajador ' + (worker + 1)).join(', ')}). Cada tarea necesita una persona distinta.`;
+  return `Las tareas ${conflict.tasks.map((task) => taskNames[task] || 'Tarea ' + (task + 1)).join(', ')} comparten solo ${conflict.workers.length} ${conflict.workers.length === 1 ? 'empleado compatible' : 'empleados compatibles'} (${conflict.workers.map((worker) => workerNames[worker] || 'Empleado ' + (worker + 1)).join(', ')}). Cada tarea necesita una persona distinta.`;
 };
 
 const readSavedTask = (): SavedTask | null => {
@@ -121,7 +121,7 @@ const readSavedTask = (): SavedTask | null => {
 
 export const OptimizationDemo = () => {
   const [matrix, setMatrix] = useState<string[][]>([['4', '1'], ['2', '3']]);
-  const [workerNames, setWorkerNames] = useState(['Trabajador 1', 'Trabajador 2']);
+  const [workerNames, setWorkerNames] = useState(['Empleado 1', 'Empleado 2']);
   const [taskNames, setTaskNames] = useState(['Tarea 1', 'Tarea 2']);
   const [allowed, setAllowed] = useState<boolean[][]>([[true, true], [true, true]]);
   const [currentAssignment, setCurrentAssignment] = useState<string[]>(['', '']);
@@ -133,8 +133,6 @@ export const OptimizationDemo = () => {
   const [task, setTask] = useState<SavedTask | null>(readSavedTask);
   const [showForm, setShowForm] = useState(task === null);
   const [draftTaskId, setDraftTaskId] = useState<string | null>(null);
-  const [bulkScope, setBulkScope] = useState<'worker' | 'task'>('worker');
-  const [bulkIndex, setBulkIndex] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPolling, setIsPolling] = useState(task !== null);
   const [status, setStatus] = useState(task ? 'PENDING' : '');
@@ -158,7 +156,6 @@ export const OptimizationDemo = () => {
     currentAssignment.every((worker, task) => allowed[Number(worker)]?.[task] && normalizeCost(matrix[Number(worker)]?.[task] ?? '') !== null);
   const draftCurrentCost = comparisonComplete
     ? currentAssignment.reduce((total, worker, task) => total + Number(matrix[Number(worker)][task]), 0) : null;
-  const selectedBulkIndex = Math.min(bulkIndex, (bulkScope === 'worker' ? workerNames : taskNames).length - 1);
 
   useEffect(() => {
     if (!task || showForm || !isPolling) return;
@@ -264,7 +261,7 @@ export const OptimizationDemo = () => {
       for (let column = 0; column < width; column++) {
         const targetRow = startRow + row;
         const targetColumn = startColumn + column;
-        const workerName = workerNames[targetRow] ?? `Trabajador ${targetRow + 1}`;
+        const workerName = workerNames[targetRow] ?? `Empleado ${targetRow + 1}`;
         const taskName = taskNames[targetColumn] ?? `Tarea ${targetColumn + 1}`;
         if (allowed[targetRow]?.[targetColumn] === false) {
           setPasteFeedback({ text: `No se puede pegar en ${workerName} / ${taskName}: la asignación está deshabilitada.`, error: true });
@@ -285,13 +282,13 @@ export const OptimizationDemo = () => {
     setAllowed(Array.from({ length: rowCount }, (_, worker) => Array.from({ length: columnCount }, (_, task) =>
       allowed[worker]?.[task] ?? true
     )));
-    if (rowCount > workerNames.length) setWorkerNames([...workerNames, ...Array.from({ length: rowCount - workerNames.length }, (_, index) => `Trabajador ${workerNames.length + index + 1}`)]);
+    if (rowCount > workerNames.length) setWorkerNames([...workerNames, ...Array.from({ length: rowCount - workerNames.length }, (_, index) => `Empleado ${workerNames.length + index + 1}`)]);
     if (columnCount > taskNames.length) {
       setTaskNames([...taskNames, ...Array.from({ length: columnCount - taskNames.length }, (_, index) => `Tarea ${taskNames.length + index + 1}`)]);
       setCurrentAssignment([...currentAssignment, ...Array(columnCount - taskNames.length).fill('')]);
     }
     setInvalidCell(null);
-    setPasteFeedback({ text: `Se pegaron ${pasted.length * width} costos en la matriz.${rowCount > matrix.length || columnCount > taskNames.length ? ' Se agregaron trabajadores o tareas; completá las celdas vacías antes de calcular.' : ''}`, error: false });
+    setPasteFeedback({ text: `Se pegaron ${pasted.length * width} costos en la matriz.${rowCount > matrix.length || columnCount > taskNames.length ? ' Se agregaron empleados o tareas; completá las celdas vacías antes de calcular.' : ''}`, error: false });
   };
 
   const clearFormErrors = () => {
@@ -304,32 +301,45 @@ export const OptimizationDemo = () => {
   const addWorker = () => {
     setMatrix((rows) => [...rows, Array(taskNames.length).fill('')]);
     setAllowed((rows) => [...rows, Array(taskNames.length).fill(true)]);
-    setWorkerNames((names) => [...names, 'Trabajador ' + (names.length + 1)]);
+    setWorkerNames((names) => {
+      let number = names.length + 1;
+      while (names.includes('Empleado ' + number)) number++;
+      return [...names, 'Empleado ' + number];
+    });
     clearFormErrors();
   };
 
-  const removeWorker = () => {
-    const removed = workerNames.length - 1;
-    setMatrix((rows) => rows.slice(0, -1));
-    setAllowed((rows) => rows.slice(0, -1));
-    setWorkerNames((names) => names.slice(0, -1));
-    setCurrentAssignment((values) => values.map((value) => value === String(removed) ? '' : value));
+  const removeWorker = (removed: number) => {
+    setMatrix((rows) => rows.filter((_, index) => index !== removed));
+    setAllowed((rows) => rows.filter((_, index) => index !== removed));
+    setWorkerNames((names) => names.filter((_, index) => index !== removed));
+    setCurrentAssignment((values) => values.map((value) => {
+      if (value === '') return '';
+      const worker = Number(value);
+      return worker === removed ? '' : String(worker > removed ? worker - 1 : worker);
+    }));
+    setComparisonError(false);
     clearFormErrors();
   };
 
   const addTask = () => {
     setMatrix((rows) => rows.map((row) => [...row, '']));
     setAllowed((rows) => rows.map((row) => [...row, true]));
-    setTaskNames((names) => [...names, 'Tarea ' + (names.length + 1)]);
+    setTaskNames((names) => {
+      let number = names.length + 1;
+      while (names.includes('Tarea ' + number)) number++;
+      return [...names, 'Tarea ' + number];
+    });
     setCurrentAssignment((values) => [...values, '']);
     clearFormErrors();
   };
 
-  const removeTask = () => {
-    setMatrix((rows) => rows.map((row) => row.slice(0, -1)));
-    setAllowed((rows) => rows.map((row) => row.slice(0, -1)));
-    setTaskNames((names) => names.slice(0, -1));
-    setCurrentAssignment((values) => values.slice(0, -1));
+  const removeTask = (removed: number) => {
+    setMatrix((rows) => rows.map((row) => row.filter((_, index) => index !== removed)));
+    setAllowed((rows) => rows.map((row) => row.filter((_, index) => index !== removed)));
+    setTaskNames((names) => names.filter((_, index) => index !== removed));
+    setCurrentAssignment((values) => values.filter((_, index) => index !== removed));
+    setComparisonError(false);
     clearFormErrors();
   };
 
@@ -338,16 +348,16 @@ export const OptimizationDemo = () => {
     if (!value) setCurrentAssignment((current) => current.map((worker, task) => task === column && worker === String(row) ? '' : worker));
   };
 
-  const updateBulkAllowed = (value: boolean) => {
+  const updateBulkAllowed = (scope: 'worker' | 'task', index: number, value: boolean) => {
     const next = allowed.map((row, worker) => row.map((item, task) =>
-      (bulkScope === 'worker' ? worker === selectedBulkIndex : task === selectedBulkIndex) ? value : item
+      (scope === 'worker' ? worker === index : task === index) ? value : item
     ));
     setAllowed(next);
     if (!value) setCurrentAssignment((current) => current.map((worker, task) =>
       worker !== '' && !next[Number(worker)]?.[task] ? '' : worker
     ));
     setComparisonError(false);
-    const name = bulkScope === 'worker' ? workerNames[selectedBulkIndex] : taskNames[selectedBulkIndex];
+    const name = scope === 'worker' ? workerNames[index] : taskNames[index];
     setPasteFeedback({ text: `Permisos actualizados para ${name}.`, error: false });
   };
 
@@ -370,13 +380,13 @@ export const OptimizationDemo = () => {
         rowOffset = 1;
       }
       if (rows.length < 2 || rows[0].length < 2 || rows.some((row) => row.length !== rows[0].length)) {
-        throw new Error('El CSV necesita una fila de tareas y una fila por trabajador, todas con igual número de columnas.');
+        throw new Error('El CSV necesita una fila de tareas y una fila por empleado, todas con igual número de columnas.');
       }
       const importedTasks = rows[0].slice(1).map((name) => name.trim());
       const importedWorkers = rows.slice(1).map((row) => row[0].trim());
-      if ([...importedTasks, ...importedWorkers].some((name) => !name)) throw new Error('Todos los trabajadores y tareas necesitan un nombre.');
+      if ([...importedTasks, ...importedWorkers].some((name) => !name)) throw new Error('Todos los empleados y tareas necesitan un nombre.');
       if (new Set(importedTasks).size !== importedTasks.length || new Set(importedWorkers).size !== importedWorkers.length) {
-        throw new Error('Los nombres de trabajadores y tareas no pueden repetirse.');
+        throw new Error('Los nombres de empleados y tareas no pueden repetirse.');
       }
       const importedAllowed = rows.slice(1).map((row) => row.slice(1).map((value) => value.trim().toUpperCase() !== 'X'));
       const importedCosts = rows.slice(1).map((row, worker) => row.slice(1).map((value, task) => {
@@ -418,7 +428,7 @@ export const OptimizationDemo = () => {
   const downloadCsv = () => {
     const rows = [
       ...(unitName.trim() ? [['Unidad de costos', unitName.trim()]] : []),
-      ['Trabajador/Tarea', ...taskNames],
+      ['Empleado/Tarea', ...taskNames],
       ...matrix.map((row, worker) => [workerNames[worker], ...row.map((value, task) => allowed[worker][task] ? value.replace('.', ',') : 'X')]),
     ];
     saveCsv(rows, 'optimizacion-matriz.csv');
@@ -434,12 +444,12 @@ export const OptimizationDemo = () => {
     setOperationError(null);
 
     if (!matrix.length || !matrix[0].length || matrix.some((row) => row.length !== matrix[0].length)) {
-      setValidationError('La matriz debe tener al menos un trabajador y una tarea, y todas las filas deben tener igual longitud.');
+      setValidationError('La matriz debe tener al menos un empleado y una tarea, y todas las filas deben tener igual longitud.');
       return;
     }
     const names = [...workerNames.map((name) => name.trim()), ...taskNames.map((name) => name.trim())];
     if (names.some((name) => !name) || new Set(workerNames.map((name) => name.trim())).size !== workerNames.length || new Set(taskNames.map((name) => name.trim())).size !== taskNames.length) {
-      setValidationError('Cada trabajador y tarea necesita un nombre distinto.');
+      setValidationError('Cada empleado y tarea necesita un nombre distinto.');
       return;
     }
     for (let row = 0; row < matrix.length; row++) {
@@ -452,7 +462,7 @@ export const OptimizationDemo = () => {
       }
     }
     if (matrix.length < matrix[0].length) {
-      setValidationError('Agregá trabajadores hasta tener al menos uno por cada tarea.');
+      setValidationError('Agregá empleados hasta tener al menos uno por cada tarea.');
       document.getElementById('add-worker')?.focus();
       return;
     }
@@ -546,11 +556,11 @@ export const OptimizationDemo = () => {
     if (!result) return;
     const baseline = submittedMatrix?.currentAssignment;
     const rows = [
-      ['Tarea', 'Trabajador propuesto', `Costo propuesto${resultUnit ? ` (${resultUnit})` : ''}`,
-        ...(baseline ? ['Trabajador actual', `Costo actual (${resultUnit})`] : [])],
+      ['Tarea', 'Empleado propuesto', `Costo propuesto${resultUnit ? ` (${resultUnit})` : ''}`,
+        ...(baseline ? ['Empleado actual', `Costo actual (${resultUnit})`] : [])],
       ...sortedAssignments.map((assignment) => [
         submittedMatrix?.taskNames[assignment.task] || 'Tarea ' + (assignment.task + 1),
-        submittedMatrix?.workerNames[assignment.worker] || 'Trabajador ' + (assignment.worker + 1),
+        submittedMatrix?.workerNames[assignment.worker] || 'Empleado ' + (assignment.worker + 1),
         String(assignment.cost),
         ...(baseline && submittedMatrix ? [submittedMatrix.workerNames[baseline[assignment.task]], String(submittedMatrix.costs[baseline[assignment.task]][assignment.task])] : []),
       ]),
@@ -566,18 +576,17 @@ export const OptimizationDemo = () => {
       <header>
         <span className="inline-flex rounded-lg border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-semibold text-blue-200">Demo integrada</span>
         <h1 className="mt-4 text-3xl font-bold tracking-tight text-white">Optimización</h1>
-        <p className="mt-2 max-w-2xl text-gray-300">Ingresá los costos de asignación y calculá una distribución de tareas de menor costo.</p>
+        <p className="mt-2 max-w-2xl text-gray-300">Encontrá la asignación de tareas con el menor costo posible.</p>
       </header>
 
       <section aria-label="Optimización de asignaciones" className="glass-card p-5 sm:p-6">
         {showForm ? (
           <form onSubmit={(event) => void startOptimization(event)} noValidate>
             <h2 className="text-xl font-semibold text-white">Matriz de costos</h2>
-            <p className="mt-2 text-sm text-gray-300">{submittedMatrix ? 'Podés editar los datos de la ejecución anterior.' : 'Los valores iniciales son un ejemplo editable.'} Cada tarea necesita un trabajador distinto.</p>
-            <p id="cost-guidance" className="mt-2 max-w-2xl text-sm text-gray-300">Usá una sola unidad en toda la tabla: pesos, horas o puntos. Por ejemplo, en pesos: horas estimadas × costo por hora.</p>
+            <p className="mt-2 text-sm text-gray-300">{submittedMatrix ? 'Editá los datos de la ejecución anterior.' : 'Empezá con esta matriz de ejemplo.'} Cada tarea requiere un empleado distinto.</p>
             {task && <div className="mt-4">
               <button type="button" onClick={() => setShowForm(false)} className="min-h-11 text-sm text-blue-200 underline underline-offset-4">Volver al resultado anterior</button>
-              {!submittedMatrix && !isPolling && <p className="mt-2 text-sm text-amber-200">Esta ejecución no tiene datos para editar. Empezá con la matriz de ejemplo; el resultado anterior seguirá disponible hasta iniciar otra.</p>}
+              {!submittedMatrix && !isPolling && <p className="mt-2 text-sm text-amber-200">No se recuperó la matriz anterior. Podés usar el ejemplo; el resultado se conserva hasta iniciar otra ejecución.</p>}
             </div>}
 
             {operationError && <p role="alert" className="mt-4 rounded-xl border border-red-400/40 bg-red-400/10 p-4 text-red-100">{operationError}</p>}
@@ -592,18 +601,24 @@ export const OptimizationDemo = () => {
               <button type="button" disabled={isSubmitting} onClick={() => downloadCsv()} className="min-h-11 rounded-lg border border-white/20 px-3 py-2 text-sm text-white hover:bg-white/5 disabled:opacity-50">Descargar CSV</button>
             </div>
             {csvFileName && <p className="mt-2 break-all text-sm text-emerald-300">CSV importado: {csvFileName}</p>}
-            <p className="mt-2 text-sm text-gray-300">Primera fila: tareas, o una línea opcional «Unidad de costos;pesos» antes de ellas. Primera columna: trabajadores. Usá X donde una persona no pueda hacer una tarea. Se aceptan separadores coma o punto y coma.</p>
+            <details className="mt-3 text-sm text-gray-300">
+              <summary className="w-fit cursor-pointer text-blue-200">Formato CSV y pegado</summary>
+              <div className="mt-2 max-w-2xl space-y-2 leading-relaxed">
+                <p>En el CSV, la primera fila contiene las tareas y la primera columna, los empleados. Usá X para impedir una asignación. Se aceptan comas o punto y coma; podés agregar «Unidad de costos;pesos» al inicio.</p>
+                <p>También podés pegar un bloque de costos desde Excel a partir de una celda. La matriz crecerá si hace falta.</p>
+              </div>
+            </details>
             {csvPreview && (
               <section aria-label="Vista previa del CSV" className="mt-4 rounded-xl border border-primary/40 bg-primary/5 p-4">
                 <h3 className="font-semibold text-white">Revisar CSV antes de importar</h3>
-                <p className="mt-1 break-all text-sm text-gray-300">{csvPreview.fileName}: {csvPreview.workerNames.length} trabajadores y {csvPreview.taskNames.length} tareas. Al confirmar se reemplazará la matriz y se quitará la comparación actual. {csvPreview.unit ? `Unidad de costos: ${csvPreview.unit}.` : 'El CSV no incluye la unidad de los costos.'}</p>
+                <p className="mt-1 break-all text-sm text-gray-300">{csvPreview.fileName}: {csvPreview.workerNames.length} empleados y {csvPreview.taskNames.length} tareas. Al confirmar se reemplazará la matriz y se quitará la comparación actual. {csvPreview.unit ? `Unidad de costos: ${csvPreview.unit}.` : 'El CSV no incluye la unidad de los costos.'}</p>
                 <div className="mt-3 overflow-x-auto">
                   <table className="min-w-max border-collapse text-left text-sm text-gray-200">
-                    <thead><tr><th scope="col" className="border-b border-white/20 px-3 py-2">Trabajador</th>{csvPreview.taskNames.map((name, task) => <th key={task} scope="col" className="border-b border-white/20 px-3 py-2">{name}</th>)}</tr></thead>
+                    <thead><tr><th scope="col" className="border-b border-white/20 px-3 py-2">Empleado</th>{csvPreview.taskNames.map((name, task) => <th key={task} scope="col" className="border-b border-white/20 px-3 py-2">{name}</th>)}</tr></thead>
                     <tbody>{csvPreview.workerNames.slice(0, 5).map((name, worker) => <tr key={worker}><th scope="row" className="border-b border-white/10 px-3 py-2 font-medium">{name}</th>{csvPreview.costs[worker].map((cost, task) => <td key={task} className="border-b border-white/10 px-3 py-2">{csvPreview.allowed[worker][task] ? cost || 'Vacío' : 'X'}</td>)}</tr>)}</tbody>
                   </table>
                 </div>
-                {csvPreview.workerNames.length > 5 && <p className="mt-2 text-sm text-gray-300">Se muestran los primeros 5 trabajadores; se importarán los {csvPreview.workerNames.length}.</p>}
+                {csvPreview.workerNames.length > 5 && <p className="mt-2 text-sm text-gray-300">Se muestran los primeros 5 empleados; se importarán los {csvPreview.workerNames.length}.</p>}
                 <div className="mt-4 flex flex-wrap gap-3">
                   <button type="button" onClick={applyCsvPreview} className="min-h-11 rounded-lg bg-primaryDark px-4 py-2 font-semibold text-white hover:bg-blue-800">Reemplazar matriz</button>
                   <button type="button" onClick={() => setCsvPreview(null)} className="min-h-11 rounded-lg border border-white/20 px-4 py-2 text-white hover:bg-white/5">Cancelar</button>
@@ -611,25 +626,45 @@ export const OptimizationDemo = () => {
               </section>
             )}
 
-            <p className="mt-5 text-sm text-gray-300">Para pegar varios costos desde Excel, seleccioná la primera celda de destino y pegá el bloque. La matriz crecerá si hace falta; completá cualquier celda que quede vacía.</p>
-            <div className="mt-3 rounded-xl border border-white/10 md:max-h-[60vh] md:overflow-auto">
+            <div className="mt-5 rounded-xl border border-white/10 md:max-h-[60vh] md:overflow-auto">
               <table className="block w-full border-collapse text-left text-sm md:table md:min-w-max">
                 <thead className="block text-gray-200 md:table-header-group">
                   <tr className="block p-4 md:table-row md:p-0">
-                    <th scope="col" className="block pb-3 text-left font-semibold md:sticky md:left-0 md:top-0 md:z-30 md:table-cell md:bg-surface md:px-3 md:py-3 md:pb-3 md:text-center"><span className="md:hidden">Nombres de las tareas</span><span className="hidden md:inline">Trabajador</span></th>
-                    {taskNames.map((name, column) => <th key={column} scope="col" className="block pb-3 text-left font-semibold last:pb-0 md:sticky md:top-0 md:z-20 md:table-cell md:bg-surface md:px-3 md:py-3"><span className="mb-1 block text-xs md:hidden">Tarea {column + 1}</span><input type="text" value={name} onChange={(event) => setTaskNames((names) => names.map((item, index) => index === column ? event.target.value : item))} aria-label={'Nombre de la tarea ' + (column + 1)} disabled={isSubmitting} maxLength={80} className="premium-input min-h-11 md:w-36" /></th>)}
+                    <th scope="col" className="block pb-3 text-left font-semibold md:sticky md:left-0 md:top-0 md:z-30 md:table-cell md:align-top md:bg-surface md:px-3 md:py-3 md:pb-3"><span className="md:hidden">Tareas</span><span className="hidden md:inline">Empleado</span></th>
+                    {taskNames.map((name, column) => <th key={column} scope="col" className="block pb-3 text-left font-semibold md:sticky md:top-0 md:z-20 md:table-cell md:bg-surface md:px-3 md:py-3">
+                      <span className="mb-1 block text-xs md:hidden">Tarea</span>
+                      <div className="relative md:w-40">
+                        <input type="text" value={name} onChange={(event) => setTaskNames((names) => names.map((item, index) => index === column ? event.target.value : item))} aria-label={'Nombre de la tarea ' + (column + 1)} disabled={isSubmitting} maxLength={80} className={'premium-input min-h-11 w-full' + (taskNames.length > 1 ? ' pr-12' : '')} />
+                        {taskNames.length > 1 && <button type="button" onClick={() => removeTask(column)} disabled={isSubmitting} aria-label={'Quitar tarea: ' + (name.trim() || 'Tarea ' + (column + 1))} title={'Quitar tarea: ' + (name.trim() || 'Tarea ' + (column + 1))} className="absolute right-1 top-1 flex h-9 w-9 items-center justify-center rounded-md text-lg text-gray-300 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50">−</button>}
+                      </div>
+                      <div className="mt-2 flex gap-1 md:w-40">
+                        <button type="button" onClick={() => updateBulkAllowed('task', column, true)} disabled={isSubmitting} aria-label={'Permitir a todos los empleados en ' + (name.trim() || 'Tarea ' + (column + 1))} className="min-h-9 flex-1 rounded-md border border-white/20 px-1 text-xs font-medium hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50">Permitir</button>
+                        <button type="button" onClick={() => updateBulkAllowed('task', column, false)} disabled={isSubmitting} aria-label={'Bloquear a todos los empleados en ' + (name.trim() || 'Tarea ' + (column + 1))} className="min-h-9 flex-1 rounded-md border border-white/20 px-1 text-xs font-medium hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50">Bloquear</button>
+                      </div>
+                    </th>)}
+                    <th scope="col" className="block text-left md:sticky md:top-0 md:z-20 md:table-cell md:w-28 md:align-top md:bg-surface md:px-3 md:py-3"><button type="button" onClick={addTask} disabled={isSubmitting} aria-label="Agregar tarea" className="min-h-11 whitespace-nowrap rounded-lg border border-white/20 px-3 py-2 text-sm font-medium text-white hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50">+ Tarea</button></th>
                   </tr>
                 </thead>
                 <tbody className="block space-y-3 px-3 pb-3 text-gray-200 md:table-row-group md:space-y-0 md:divide-y md:divide-white/10 md:px-0 md:pb-0">
                   {matrix.map((row, rowIndex) => (
                     <tr key={rowIndex} className="block min-w-0 rounded-lg border border-white/10 bg-white/[0.02] p-3 md:table-row md:rounded-none md:border-0 md:bg-transparent md:p-0">
-                      <th scope="row" className="block min-w-0 pb-3 text-left font-medium md:sticky md:left-0 md:z-10 md:table-cell md:bg-surface md:px-3 md:py-3 md:pb-3"><span className="mb-1 block text-xs md:hidden">Trabajador {rowIndex + 1}</span><input type="text" value={workerNames[rowIndex]} onChange={(event) => setWorkerNames((names) => names.map((item, index) => index === rowIndex ? event.target.value : item))} aria-label={'Nombre del trabajador ' + (rowIndex + 1)} disabled={isSubmitting} maxLength={80} className="premium-input min-h-11 md:w-40" /></th>
+                      <th scope="row" className="block min-w-0 pb-3 text-left font-medium md:sticky md:left-0 md:z-10 md:table-cell md:align-top md:bg-surface md:px-3 md:py-2 md:pb-2">
+                        <span className="mb-1 block text-xs md:hidden">Empleado</span>
+                        <div className="relative md:w-40">
+                          <input type="text" value={workerNames[rowIndex]} onChange={(event) => setWorkerNames((names) => names.map((item, index) => index === rowIndex ? event.target.value : item))} aria-label={'Nombre del empleado ' + (rowIndex + 1)} disabled={isSubmitting} maxLength={80} className={'premium-input min-h-11 w-full' + (matrix.length > 1 ? ' pr-12' : '')} />
+                          {matrix.length > 1 && <button type="button" onClick={() => removeWorker(rowIndex)} disabled={isSubmitting} aria-label={'Quitar empleado: ' + (workerNames[rowIndex].trim() || 'Empleado ' + (rowIndex + 1))} title={'Quitar empleado: ' + (workerNames[rowIndex].trim() || 'Empleado ' + (rowIndex + 1))} className="absolute right-1 top-1 flex h-9 w-9 items-center justify-center rounded-md text-lg text-gray-300 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50">−</button>}
+                        </div>
+                        <div className="mt-2 flex gap-1 md:w-40">
+                          <button type="button" onClick={() => updateBulkAllowed('worker', rowIndex, true)} disabled={isSubmitting} aria-label={'Permitir todas las tareas a ' + (workerNames[rowIndex].trim() || 'Empleado ' + (rowIndex + 1))} className="min-h-9 flex-1 rounded-md border border-white/20 px-1 text-xs font-medium hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50">Permitir</button>
+                          <button type="button" onClick={() => updateBulkAllowed('worker', rowIndex, false)} disabled={isSubmitting} aria-label={'Bloquear todas las tareas a ' + (workerNames[rowIndex].trim() || 'Empleado ' + (rowIndex + 1))} className="min-h-9 flex-1 rounded-md border border-white/20 px-1 text-xs font-medium hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50">Bloquear</button>
+                        </div>
+                      </th>
                       {row.map((value, columnIndex) => {
                         const invalid = invalidCell?.row === rowIndex && invalidCell.column === columnIndex;
-                        const workerLabel = workerNames[rowIndex].trim() || 'Trabajador ' + (rowIndex + 1);
+                        const workerLabel = workerNames[rowIndex].trim() || 'Empleado ' + (rowIndex + 1);
                         const taskLabel = taskNames[columnIndex].trim() || 'Tarea ' + (columnIndex + 1);
                         return (
-                          <td key={columnIndex} className="block min-w-0 border-t border-white/10 py-3 last:pb-0 md:table-cell md:border-0 md:px-3 md:py-2">
+                          <td key={columnIndex} className="block min-w-0 border-t border-white/10 py-3 last:pb-0 md:table-cell md:align-top md:border-0 md:px-3 md:py-2">
                             <span className="mb-1 block font-medium md:hidden">{taskLabel}</span>
                             <input
                               id={'cost-' + rowIndex + '-' + columnIndex}
@@ -643,7 +678,7 @@ export const OptimizationDemo = () => {
                               aria-describedby={invalid ? 'cost-error-' + rowIndex + '-' + columnIndex : undefined}
                               disabled={isSubmitting || !allowed[rowIndex][columnIndex]}
                               placeholder={allowed[rowIndex][columnIndex] ? undefined : 'No asignable'}
-                              className="premium-input min-h-11 md:w-28"
+                              className="premium-input min-h-11 md:w-40"
                             />
                             <label className="mt-2 flex items-center gap-2 text-xs text-gray-200">
                               <input type="checkbox" checked={allowed[rowIndex][columnIndex]} onChange={(event) => updateAllowed(rowIndex, columnIndex, event.target.checked)} aria-label={workerLabel + ' puede hacer ' + taskLabel} disabled={isSubmitting} className="h-4 w-4 accent-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" />
@@ -653,46 +688,22 @@ export const OptimizationDemo = () => {
                           </td>
                         );
                       })}
+                      <td className="hidden md:table-cell" />
                     </tr>
                   ))}
+                  <tr className="block px-3 pb-3 md:table-row md:p-0">
+                    <th scope="row" className="block text-left md:sticky md:left-0 md:table-cell md:bg-surface md:px-3 md:py-3"><button id="add-worker" type="button" disabled={isSubmitting} onClick={addWorker} aria-label="Agregar empleado" className="min-h-11 whitespace-nowrap rounded-lg border border-white/20 px-3 py-2 text-sm font-medium text-white hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50">+ Empleado</button></th>
+                    <td colSpan={taskNames.length + 1} className="hidden md:table-cell" />
+                  </tr>
                 </tbody>
               </table>
             </div>
             {pasteFeedback && <p role={pasteFeedback.error ? 'alert' : 'status'} className={'mt-3 text-sm ' + (pasteFeedback.error ? 'text-red-200' : 'text-emerald-300')}>{pasteFeedback.text}</p>}
             {feasibilityMessage && <p id="eligibility-guidance" tabIndex={-1} role="status" className="mt-3 rounded-lg border border-amber-300/40 bg-amber-300/10 p-3 text-sm text-amber-100">{feasibilityMessage} Revisá las casillas «Puede hacerla».</p>}
 
-            <section aria-label="Permisos rápidos" className="mt-5 rounded-xl border border-white/10 p-4">
-              <h3 className="font-semibold text-white">Permisos rápidos</h3>
-              <p className="mt-1 text-sm text-gray-300">Aplicá el mismo permiso a una fila o columna de la matriz.</p>
-              <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                <label className="text-sm text-gray-200">Aplicar a
-                  <select value={bulkScope} onChange={(event) => { setBulkScope(event.target.value as 'worker' | 'task'); setBulkIndex(0); }} disabled={isSubmitting} className="premium-input mt-1 min-h-11">
-                    <option value="worker">Trabajador</option>
-                    <option value="task">Tarea</option>
-                  </select>
-                </label>
-                <label className="text-sm text-gray-200">{bulkScope === 'worker' ? 'Trabajador' : 'Tarea'}
-                  <select value={selectedBulkIndex} onChange={(event) => setBulkIndex(Number(event.target.value))} disabled={isSubmitting} className="premium-input mt-1 min-h-11">
-                    {(bulkScope === 'worker' ? workerNames : taskNames).map((name, index) => <option key={index} value={index}>{name.trim() || (bulkScope === 'worker' ? 'Trabajador ' : 'Tarea ') + (index + 1)}</option>)}
-                  </select>
-                </label>
-              </div>
-              <div className="mt-3 flex flex-wrap gap-2">
-                <button type="button" disabled={isSubmitting} onClick={() => updateBulkAllowed(true)} className="min-h-11 rounded-lg border border-white/20 px-3 py-2 text-sm text-white hover:bg-white/5 disabled:opacity-50">{bulkScope === 'worker' ? 'Permitir todas las tareas' : 'Permitir a todos los trabajadores'}</button>
-                <button type="button" disabled={isSubmitting} onClick={() => updateBulkAllowed(false)} className="min-h-11 rounded-lg border border-white/20 px-3 py-2 text-sm text-white hover:bg-white/5 disabled:opacity-50">{bulkScope === 'worker' ? 'Bloquear todas las tareas' : 'Bloquear a todos los trabajadores'}</button>
-              </div>
-            </section>
-
-            <div className="mt-4 flex flex-wrap gap-2">
-              <button id="add-worker" type="button" disabled={isSubmitting} onClick={addWorker} className="min-h-11 rounded-lg border border-white/20 px-3 py-2 text-sm text-white hover:bg-white/5 disabled:opacity-50">Agregar trabajador</button>
-              <button type="button" disabled={isSubmitting || matrix.length === 1} onClick={removeWorker} className="min-h-11 rounded-lg border border-white/20 px-3 py-2 text-sm text-white hover:bg-white/5 disabled:opacity-50">Quitar último trabajador</button>
-              <button type="button" disabled={isSubmitting} onClick={addTask} className="min-h-11 rounded-lg border border-white/20 px-3 py-2 text-sm text-white hover:bg-white/5 disabled:opacity-50">Agregar tarea</button>
-              <button type="button" disabled={isSubmitting || matrix[0].length === 1} onClick={removeTask} className="min-h-11 rounded-lg border border-white/20 px-3 py-2 text-sm text-white hover:bg-white/5 disabled:opacity-50">Quitar última tarea</button>
-            </div>
-
             <section aria-labelledby="current-heading" className="mt-7">
               <h3 id="current-heading" className="text-lg font-semibold text-white">Asignación actual (opcional)</h3>
-              <p className="mt-1 text-sm text-gray-300">Elegí un trabajador distinto para cada tarea y compará su costo con la propuesta. Dejá todas sin seleccionar si no querés comparar.</p>
+              <p className="mt-1 text-sm text-gray-300">Elegí un empleado por tarea para comparar costos. Dejá todo sin seleccionar si no querés comparar.</p>
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 {taskNames.map((name, task) => {
                   const worker = currentAssignment[task];
@@ -700,11 +711,11 @@ export const OptimizationDemo = () => {
                     (!worker || currentAssignment.indexOf(worker) !== task || !allowed[Number(worker)]?.[task]);
                   return <label key={task} className="block text-sm text-gray-200">
                     <span className="mb-2 block">{name || 'Tarea ' + (task + 1)}</span>
-                    <select id={'current-assignment-' + task} value={worker} onChange={(event) => { setCurrentAssignment((values) => values.map((value, index) => index === task ? event.target.value : value)); setComparisonError(false); }} disabled={isSubmitting} aria-invalid={invalid} aria-describedby={invalid ? 'current-error-' + task : undefined} aria-label={'Trabajador actual para ' + (name || 'tarea ' + (task + 1))} className="premium-input min-h-11">
+                    <select id={'current-assignment-' + task} value={worker} onChange={(event) => { setCurrentAssignment((values) => values.map((value, index) => index === task ? event.target.value : value)); setComparisonError(false); }} disabled={isSubmitting} aria-invalid={invalid} aria-describedby={invalid ? 'current-error-' + task : undefined} aria-label={'Empleado actual para ' + (name || 'tarea ' + (task + 1))} className="premium-input min-h-11">
                       <option value="">Sin seleccionar</option>
-                      {workerNames.map((workerName, index) => allowed[index][task] && <option key={index} value={index} disabled={currentAssignment.some((selected, otherTask) => otherTask !== task && selected === String(index))}>{workerName || 'Trabajador ' + (index + 1)}</option>)}
+                      {workerNames.map((workerName, index) => allowed[index][task] && <option key={index} value={index} disabled={currentAssignment.some((selected, otherTask) => otherTask !== task && selected === String(index))}>{workerName || 'Empleado ' + (index + 1)}</option>)}
                     </select>
-                    {invalid && <span id={'current-error-' + task} className="mt-2 block text-sm text-red-200">{!worker ? 'Elegí un trabajador o quitá la comparación.' : 'Este trabajador ya está asignado a otra tarea.'}</span>}
+                    {invalid && <span id={'current-error-' + task} className="mt-2 block text-sm text-red-200">{!worker ? 'Elegí un empleado o quitá la comparación.' : 'Este empleado ya está asignado a otra tarea.'}</span>}
                   </label>;
                 })}
               </div>
@@ -724,7 +735,7 @@ export const OptimizationDemo = () => {
               <label htmlFor="cost-unit" className="block text-sm font-medium text-gray-200">Unidad de los costos</label>
               <input id="cost-unit" type="text" value={unitName} onChange={(event) => { setUnitName(event.target.value); setUnitNameError(false); }} aria-invalid={unitNameError} aria-describedby={unitNameError ? 'unit-name-error' : 'cost-guidance'} disabled={isSubmitting} maxLength={30} placeholder="Ej.: pesos, horas o puntos" className="premium-input mt-2 min-h-11 max-w-xs" />
               {unitNameError && <p id="unit-name-error" role="alert" className="mt-2 text-sm text-red-200">Escribí la unidad de los costos, por ejemplo pesos, horas o puntos.</p>}
-              <p className="mt-2 text-sm text-gray-300">Esta unidad se mostrará en los totales del resultado.</p>
+              <p id="cost-guidance" className="mt-2 text-sm text-gray-300">Usá la misma unidad en todos los costos: pesos, horas o puntos.</p>
               <label htmlFor="same-unit" className="mt-4 flex items-start gap-3 text-sm text-gray-200">
                 <input id="same-unit" type="checkbox" checked={sameUnitConfirmed} onChange={(event) => { setSameUnitConfirmed(event.target.checked); setUnitError(false); }} aria-invalid={unitError} aria-describedby={unitError ? 'unit-error' : 'cost-guidance'} disabled={isSubmitting} className="mt-0.5 h-5 w-5 shrink-0 accent-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" />
                 <span>Todos los costos de esta matriz usan la misma unidad.</span>
@@ -757,7 +768,7 @@ export const OptimizationDemo = () => {
                         return <li key={assignment.task} className={'grid min-w-0 gap-2 py-3 ' + (currentWorker !== undefined ? 'md:grid-cols-3' : 'md:grid-cols-2')}>
                           <span className="break-words font-semibold text-white">{submittedMatrix?.taskNames[assignment.task] || 'Tarea ' + (assignment.task + 1)}</span>
                           {currentWorker !== undefined && <span className="min-w-0 break-words"><span className="block text-xs text-gray-400">Actual</span>{submittedMatrix?.workerNames[currentWorker]} · Costo: {submittedMatrix?.costs[currentWorker][assignment.task]}{resultUnit && ' ' + resultUnit}</span>}
-                          <span className="min-w-0 break-words"><span className="block text-xs text-gray-400">Propuesta</span>{submittedMatrix?.workerNames[assignment.worker] || 'Trabajador ' + (assignment.worker + 1)} · Costo: {assignment.cost}{resultUnit && ' ' + resultUnit}{changed && <span className="ml-2 text-amber-200">Cambio</span>}</span>
+                          <span className="min-w-0 break-words"><span className="block text-xs text-gray-400">Propuesta</span>{submittedMatrix?.workerNames[assignment.worker] || 'Empleado ' + (assignment.worker + 1)} · Costo: {assignment.cost}{resultUnit && ' ' + resultUnit}{changed && <span className="ml-2 text-amber-200">Cambio</span>}</span>
                         </li>;
                       })}
                     </ul>
@@ -771,7 +782,7 @@ export const OptimizationDemo = () => {
                   {!submittedMatrix && <p className="mt-4 text-sm text-amber-200">No se pudo recuperar el contexto de esta ejecución. Los nombres, la unidad y la comparación no están disponibles.</p>}
                 </div>
               ) : infeasible ? (
-                <p className="rounded-xl border border-amber-300/40 bg-amber-300/10 p-4 text-amber-100">No factible: el motor no encontró una asignación que cumpla las condiciones. {infeasibilityDetail || 'Cada tarea necesita un trabajador permitido y distinto. Revisá las casillas «Puede hacerla» antes de iniciar otra optimización.'}</p>
+                <p className="rounded-xl border border-amber-300/40 bg-amber-300/10 p-4 text-amber-100">No factible: el motor no encontró una asignación que cumpla las condiciones. {infeasibilityDetail || 'Cada tarea necesita un empleado permitido y distinto. Revisá las casillas «Puede hacerla» antes de iniciar otra optimización.'}</p>
               ) : operationError ? (
                 <p role="alert" className="rounded-xl border border-red-400/40 bg-red-400/10 p-4 text-red-100">{operationError}</p>
               ) : timedOut ? (
@@ -779,17 +790,17 @@ export const OptimizationDemo = () => {
               ) : (
                 <p role="status" className="flex items-center gap-3 text-sm text-gray-300">
                   <Loader2 size={20} aria-hidden="true" className="animate-spin text-primary" />
-                  {status === 'STARTED' ? 'Procesando la matriz…' : status === 'RETRY' ? 'Reintentando el cálculo…' : 'En cola. Consultando el estado…'}
+                  {status === 'STARTED' ? 'Procesando la matriz…' : status === 'RETRY' ? 'Reintentando el cálculo…' : 'Consultando el estado…'}
                 </p>
               )}
             </div>
 
             <div className="mt-6 flex flex-wrap gap-3">
-              {result && <button type="button" onClick={downloadResultCsv} className="min-h-11 rounded-lg bg-primaryDark px-4 py-2.5 font-semibold text-white hover:bg-blue-800">Descargar resultado CSV</button>}
               {!isPolling && !result && !infeasible && status !== 'SUCCESS' && status !== 'FAILURE' && (
                 <button type="button" onClick={consultAgain} className="min-h-11 rounded-lg bg-primaryDark px-4 py-2.5 font-semibold text-white hover:bg-blue-800">Consultar de nuevo</button>
               )}
-              <button type="button" onClick={editOptimization} className="min-h-11 rounded-lg border border-white/20 px-4 py-2.5 font-semibold text-white hover:bg-white/5">{submittedMatrix ? 'Editar matriz' : 'Crear otra matriz'}</button>
+              <button type="button" onClick={editOptimization} className={`min-h-11 rounded-lg px-4 py-2.5 font-semibold text-white ${result ? 'bg-primaryDark hover:bg-blue-800' : 'border border-white/20 hover:bg-white/5'}`}>{submittedMatrix ? 'Editar matriz' : 'Crear otra matriz'}</button>
+              {result && <button type="button" onClick={downloadResultCsv} className="min-h-11 rounded-lg border border-white/20 px-4 py-2.5 font-semibold text-white hover:bg-white/5">Descargar resultado CSV</button>}
             </div>
           </div>
         )}

@@ -21,7 +21,7 @@ describe('Optimización', () => {
 
   it('valida una celda vacía sin enviar una tarea', () => {
     render(<OptimizationDemo />);
-    fireEvent.change(screen.getByLabelText('Costo de Trabajador 1 para Tarea 1'), { target: { value: '' } });
+    fireEvent.change(screen.getByLabelText('Costo de Empleado 1 para Tarea 1'), { target: { value: '' } });
     fireEvent.click(screen.getByRole('button', { name: 'Iniciar optimización' }));
     expect(screen.getByText('Ingresá un número válido.')).toBeTruthy();
     expect(axios.post).not.toHaveBeenCalled();
@@ -122,25 +122,24 @@ describe('Optimización', () => {
 
   it('aplica permisos por tarea y muestra el costo actual solo si la comparación está completa', () => {
     render(<OptimizationDemo />);
-    fireEvent.change(screen.getByLabelText('Trabajador actual para Tarea 1'), { target: { value: '0' } });
+    fireEvent.change(screen.getByLabelText('Empleado actual para Tarea 1'), { target: { value: '0' } });
     expect(screen.getByText('Asignadas 1 de 2 tareas. Faltan 1.')).toBeTruthy();
-    fireEvent.change(screen.getByLabelText('Trabajador actual para Tarea 2'), { target: { value: '1' } });
+    fireEvent.change(screen.getByLabelText('Empleado actual para Tarea 2'), { target: { value: '1' } });
     expect(screen.getByText('Asignadas 2 de 2 tareas. Costo actual: 7 unidades.')).toBeTruthy();
-    fireEvent.change(screen.getByLabelText('Costo de Trabajador 1 para Tarea 1'), { target: { value: '' } });
+    fireEvent.change(screen.getByLabelText('Costo de Empleado 1 para Tarea 1'), { target: { value: '' } });
     expect(screen.getByText('Revisá los costos y permisos de la asignación actual para calcular el total.')).toBeTruthy();
-    fireEvent.change(screen.getByLabelText('Costo de Trabajador 1 para Tarea 1'), { target: { value: '4' } });
+    fireEvent.change(screen.getByLabelText('Costo de Empleado 1 para Tarea 1'), { target: { value: '4' } });
     fireEvent.change(screen.getByLabelText('Unidad de los costos'), { target: { value: '' } });
     expect(screen.getByText('Escribí la unidad de los costos para ver el total actual.')).toBeTruthy();
     fireEvent.change(screen.getByLabelText('Unidad de los costos'), { target: { value: 'unidades' } });
 
-    fireEvent.change(screen.getByLabelText('Aplicar a'), { target: { value: 'task' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Bloquear a todos los trabajadores' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Bloquear a todos los empleados en Tarea 1' }));
     expect(screen.getByText('Asignadas 1 de 2 tareas. Faltan 1.')).toBeTruthy();
-    expect(screen.getByLabelText('Costo de Trabajador 1 para Tarea 1').disabled).toBe(true);
-    fireEvent.click(screen.getByRole('button', { name: 'Permitir a todos los trabajadores' }));
-    expect(screen.getByLabelText('Costo de Trabajador 1 para Tarea 1').value).toBe('4');
+    expect(screen.getByLabelText('Costo de Empleado 1 para Tarea 1').disabled).toBe(true);
+    fireEvent.click(screen.getByRole('button', { name: 'Permitir a todos los empleados en Tarea 1' }));
+    expect(screen.getByLabelText('Costo de Empleado 1 para Tarea 1').value).toBe('4');
 
-    fireEvent.change(screen.getByLabelText('Nombre del trabajador 1'), { target: { value: 'Marcos' } });
+    fireEvent.change(screen.getByLabelText('Nombre del empleado 1'), { target: { value: 'Marcos' } });
     fireEvent.change(screen.getByLabelText('Nombre de la tarea 1'), { target: { value: 'Inventario' } });
     expect(screen.getAllByLabelText('Costo de Marcos para Inventario')).toHaveLength(1);
     expect(screen.getByLabelText('Marcos puede hacer Inventario')).toBeTruthy();

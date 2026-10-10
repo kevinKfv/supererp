@@ -45,17 +45,13 @@ export const PredictionDemo = () => {
       <header>
         <span className="inline-flex rounded-lg border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-semibold text-blue-200">Demo integrada</span>
         <h1 className="mt-4 text-3xl font-bold tracking-tight text-white">Predicción</h1>
-        <p className="mt-2 max-w-2xl text-gray-300">Conocé las entradas y la presentación de un posible resultado de ventas a través del API Gateway.</p>
+        <p className="mt-2 max-w-2xl text-gray-300">Consultá una estimación de ventas con datos de ejemplo.</p>
       </header>
-
-      <p role="note" className="rounded-xl border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-blue-100">
-        Esta pantalla se conecta al Prediction Engine mediante el API Gateway.
-      </p>
 
       <section aria-label="Ejemplo de predicción" className="glass-card p-5 sm:p-6">
         <div aria-live="polite" aria-atomic="true">
           {error && (
-            <div className="mb-4 rounded-xl border border-red-400/40 bg-red-400/10 p-4 text-red-100">
+            <div role="alert" className="mb-4 rounded-xl border border-red-400/40 bg-red-400/10 p-4 text-red-100">
               <p>{error}</p>
             </div>
           )}
@@ -67,7 +63,7 @@ export const PredictionDemo = () => {
           ) : showResult && predictionResult !== null ? (
             <div>
               <h2 className="text-xl font-semibold text-white">Resultado de la predicción</h2>
-              <p className="mt-2 text-sm text-gray-300">Este valor fue calculado por el motor de Machine Learning.</p>
+              <p className="mt-2 text-sm text-gray-300">Resultado calculado con las entradas de ejemplo.</p>
               <div className="mt-5 rounded-xl border border-white/10 bg-background p-5">
                 <p className="text-sm font-medium text-gray-300">Ventas estimadas</p>
                 <p className="mt-2 text-4xl font-bold text-white">
@@ -78,8 +74,7 @@ export const PredictionDemo = () => {
             </div>
           ) : (
             <div>
-              <h2 className="text-xl font-semibold text-white">Entradas de ejemplo</h2>
-              <p className="mt-2 text-sm text-gray-300">El motor usa estas tres variables (precio, marketing, temperatura).</p>
+              <h2 className="text-xl font-semibold text-white">Datos de ejemplo</h2>
               <dl className="mt-5 divide-y divide-white/10 rounded-xl border border-white/10 px-4 text-sm">
                 <div className="flex flex-wrap justify-between gap-2 py-3"><dt className="text-gray-300">Precio</dt><dd className="font-semibold text-white">100</dd></div>
                 <div className="flex flex-wrap justify-between gap-2 py-3"><dt className="text-gray-300">Inversión en marketing</dt><dd className="font-semibold text-white">80</dd></div>
@@ -93,7 +88,7 @@ export const PredictionDemo = () => {
           type="button" 
           onClick={handleAction} 
           disabled={isLoading}
-          className="mt-6 min-h-11 rounded-lg bg-primaryDark px-4 py-2.5 font-semibold text-white transition-colors hover:bg-blue-800 disabled:opacity-50"
+          className={`mt-6 min-h-11 rounded-lg px-4 py-2.5 font-semibold text-white transition-colors disabled:opacity-50 ${showResult ? 'border border-white/20 hover:bg-white/5' : 'bg-primaryDark hover:bg-blue-800'}`}
         >
           {showResult ? 'Volver a las entradas' : error ? 'Reintentar predicción' : 'Calcular predicción'}
         </button>
