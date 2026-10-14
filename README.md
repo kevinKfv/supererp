@@ -1,4 +1,4 @@
-﻿# OptimusAI — Sistema Universal de Optimización Empresarial
+# OptimusAI — Sistema Universal de Optimización Empresarial
 
 > **Repositorio:** [https://github.com/kevinKfv/supererp](https://github.com/kevinKfv/supererp)  
 > **Stack:** FastAPI · React 19 · TailwindCSS · Docker · PostgreSQL · Redis · MinIO · Qdrant · Kafka  
