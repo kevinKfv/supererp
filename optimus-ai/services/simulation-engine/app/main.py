@@ -19,5 +19,6 @@ app.add_middleware(
 app.include_router(simulate.router, prefix="/api/v1/simulate", tags=["Simulation"])
 
 @app.get("/health")
+@app.get("/api/v1/simulate/health")
 async def health_check():
     return {"status": "ok", "service": "simulation-engine"}
