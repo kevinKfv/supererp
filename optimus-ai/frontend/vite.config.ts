@@ -7,10 +7,11 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',   // Necesario para Docker
     port: 5173,
+    allowedHosts: true, // Permite peticiones desde la red Docker o proxy inverso
     proxy: {
-      // Redirige /api/* al API Gateway en el mismo host (Docker: gateway-service:8000)
+      // En Docker usa GATEWAY_URL (http://gateway-service:8000). En local usa http://localhost:8000
       '/api': {
-        target: 'http://localhost:8000',
+        target: process.env.GATEWAY_URL || 'http://localhost:8000',
         changeOrigin: true,
       },
     },
