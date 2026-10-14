@@ -119,3 +119,193 @@ spec:
     - protocol: TCP
       port: 8000
       targetPort: 8000
+
+---
+# Optimization Engine (API)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: optimization-engine
+  namespace: optimus-ai
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: optimization-engine
+  template:
+    metadata:
+      labels:
+        app: optimization-engine
+    spec:
+      containers:
+        - name: optimization-engine
+          image: optimus-optimization:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: optimus-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: optimization-engine
+  namespace: optimus-ai
+spec:
+  type: ClusterIP
+  selector:
+    app: optimization-engine
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+
+---
+# Optimization Worker (Celery Background Solver)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: optimization-worker
+  namespace: optimus-ai
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: optimization-worker
+  template:
+    metadata:
+      labels:
+        app: optimization-worker
+    spec:
+      containers:
+        - name: optimization-worker
+          image: optimus-optimization:latest
+          imagePullPolicy: Never
+          command: ["celery", "-A", "app.worker:celery_app", "worker", "--loglevel=info"]
+          envFrom:
+            - configMapRef:
+                name: optimus-config
+
+---
+# Prediction Engine
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prediction-engine
+  namespace: optimus-ai
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prediction-engine
+  template:
+    metadata:
+      labels:
+        app: prediction-engine
+    spec:
+      containers:
+        - name: prediction-engine
+          image: optimus-prediction:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: optimus-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prediction-engine
+  namespace: optimus-ai
+spec:
+  type: ClusterIP
+  selector:
+    app: prediction-engine
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+
+---
+# Simulation Engine
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simulation-engine
+  namespace: optimus-ai
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: simulation-engine
+  template:
+    metadata:
+      labels:
+        app: simulation-engine
+    spec:
+      containers:
+        - name: simulation-engine
+          image: optimus-simulation:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: optimus-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: simulation-engine
+  namespace: optimus-ai
+spec:
+  type: ClusterIP
+  selector:
+    app: simulation-engine
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+
+---
+# Rules Engine
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rules-engine
+  namespace: optimus-ai
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rules-engine
+  template:
+    metadata:
+      labels:
+        app: rules-engine
+    spec:
+      containers:
+        - name: rules-engine
+          image: optimus-rules:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: optimus-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rules-engine
+  namespace: optimus-ai
+spec:
+  type: ClusterIP
+  selector:
+    app: rules-engine
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000

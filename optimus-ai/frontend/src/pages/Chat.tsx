@@ -1,11 +1,19 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { Send, Bot, User, Loader2 } from 'lucide-react';
+import { Send, Bot, User, Loader2, ArrowRight } from 'lucide-react';
 
 type Message =
   | { role: 'user'; content: string }
-  | { role: 'assistant'; content: string; data?: unknown; explanation?: string; isError?: boolean; retryText?: string };
+  | {
+      role: 'assistant';
+      content: string;
+      data?: any;
+      explanation?: string;
+      isError?: boolean;
+      retryText?: string;
+    };
 
 export const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -18,19 +26,25 @@ export const Chat = () => {
       const response = await axios.post('http://localhost:8000/api/v1/chat/intent', {
         user_input: text,
       });
-      setMessages((previous) => [...previous, {
-        role: 'assistant',
-        content: 'Instrucción interpretada. Revisá los datos extraídos.',
-        data: response.data.extracted_intent,
-        explanation: response.data.explanation,
-      }]);
+      setMessages((previous) => [
+        ...previous,
+        {
+          role: 'assistant',
+          content: 'Instrucción interpretada. Revisá los parámetros extraídos y la acción recomendada.',
+          data: response.data.extracted_intent,
+          explanation: response.data.explanation,
+        },
+      ]);
     } catch {
-      setMessages((previous) => [...previous, {
-        role: 'assistant',
-        content: 'No se pudo interpretar la instrucción.',
-        isError: true,
-        retryText: text,
-      }]);
+      setMessages((previous) => [
+        ...previous,
+        {
+          role: 'assistant',
+          content: 'No se pudo interpretar la instrucción.',
+          isError: true,
+          retryText: text,
+        },
+      ]);
     } finally {
       setIsLoading(false);
     }
@@ -54,8 +68,13 @@ export const Chat = () => {
   return (
     <div className={`flex max-w-4xl flex-col gap-6 ${messages.length ? 'min-h-[calc(100dvh-7rem)] md:h-[calc(100vh-4rem)] md:min-h-0' : ''}`}>
       <header>
-        <h1 className="text-3xl font-bold tracking-tight text-white">Interpretar instrucciones</h1>
-        <p className="mt-2 max-w-2xl text-gray-300">Escribí una instrucción para ver cómo la entiende el sistema. No ejecuta análisis.</p>
+        <span className="inline-flex rounded-lg border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-semibold text-blue-200">
+          Knowledge Engine
+        </span>
+        <h1 className="mt-4 text-3xl font-bold tracking-tight text-white">Interpretar Instrucciones</h1>
+        <p className="mt-2 max-w-2xl text-gray-300">
+          Escribí tu objetivo de negocio en lenguaje natural. El asistente extraerá la intención, estructurará los parámetros y te derivará al motor correspondiente.
+        </p>
       </header>
 
       <section aria-label="Interpretación de instrucciones" className={`glass-card flex min-w-0 flex-col overflow-hidden ${messages.length ? 'min-h-[24rem] flex-1' : 'min-h-[18rem]'}`}>
@@ -63,7 +82,30 @@ export const Chat = () => {
           {messages.length === 0 && (
             <div className="flex h-full flex-col items-center justify-center gap-3 text-center text-gray-300">
               <Bot size={36} aria-hidden="true" className="text-primary" />
-              <p>Probá con «Reducí costos».</p>
+              <p className="font-medium text-white">¿En qué puedo ayudarte?</p>
+              <div className="flex flex-wrap justify-center gap-2 max-w-md mt-2">
+                <button
+                  type="button"
+                  onClick={() => { setInput('Reducir costos de logística en un 15%'); }}
+                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-blue-200 hover:bg-white/10"
+                >
+                  «Reducir costos en un 15%»
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setInput('Simular riesgo y rentabilidad para el próximo trimestre'); }}
+                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-blue-200 hover:bg-white/10"
+                >
+                  «Simular riesgo y rentabilidad»
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setInput('Asignar empleados a las tareas pendientes'); }}
+                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-blue-200 hover:bg-white/10"
+                >
+                  «Asignar empleados a tareas»
+                </button>
+              </div>
             </div>
           )}
 
@@ -81,15 +123,43 @@ export const Chat = () => {
               }`} role={message.role === 'assistant' && message.isError ? 'alert' : undefined}>
                 <p className="mb-1 text-xs font-semibold text-gray-300">{message.role === 'user' ? 'Vos' : message.isError ? 'Error' : 'Interpretación'}</p>
                 <p className="break-words">{message.content}</p>
+                
                 {message.role === 'assistant' && message.data != null && (
-                  <details className="mt-3 max-w-full">
-                    <summary className="cursor-pointer text-sm font-medium text-blue-300">Ver detalle de la interpretación</summary>
+                  <div className="mt-3 space-y-3">
                     {message.explanation && (
-                      <p className="mt-2 break-words text-gray-300">{message.explanation}</p>
+                      <p className="break-words text-gray-300 bg-white/5 p-3 rounded-lg border border-white/10">
+                        {message.explanation}
+                      </p>
                     )}
-                    <pre className="mt-2 max-w-full overflow-x-auto rounded-lg bg-black/30 p-3 text-xs text-gray-300">{JSON.stringify(message.data, null, 2)}</pre>
-                  </details>
+
+                    {/* Action buttons based on detected intent */}
+                    {(message.data.intent === 'OPTIMIZE' || message.data.intent === 'ASSIGN') && (
+                      <Link
+                        to="/optimization"
+                        className="inline-flex items-center gap-2 rounded-lg bg-primaryDark px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-blue-800"
+                      >
+                        Abrir Motor de Optimización <ArrowRight size={14} />
+                      </Link>
+                    )}
+
+                    {message.data.intent === 'SIMULATE' && (
+                      <Link
+                        to="/simulation"
+                        className="inline-flex items-center gap-2 rounded-lg bg-primaryDark px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-blue-800"
+                      >
+                        Abrir Simulación Monte Carlo <ArrowRight size={14} />
+                      </Link>
+                    )}
+
+                    <details className="mt-2 max-w-full">
+                      <summary className="cursor-pointer text-xs font-medium text-blue-300">Ver payload JSON extraído</summary>
+                      <pre className="mt-2 max-w-full overflow-x-auto rounded-lg bg-black/40 p-3 text-xs text-gray-300 font-mono">
+                        {JSON.stringify(message.data, null, 2)}
+                      </pre>
+                    </details>
+                  </div>
                 )}
+
                 {message.role === 'assistant' && message.retryText && (
                   <button type="button" disabled={isLoading} onClick={() => retryMessage(index, message.retryText!)} className="mt-3 min-h-11 rounded-lg border border-red-300/40 px-4 py-2 font-medium text-white transition-colors hover:bg-red-400/10 disabled:opacity-50">
                     Reintentar
@@ -116,7 +186,7 @@ export const Chat = () => {
                 type="text"
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
-                placeholder="Escribí acá"
+                placeholder="Escribí acá (ej. «Reducir costos de producción en 20%»)"
                 className="premium-input min-h-11 pr-16"
                 disabled={isLoading}
               />

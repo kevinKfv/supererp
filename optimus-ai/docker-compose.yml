@@ -85,7 +85,7 @@ services:
       - optimus_network
 
   minio:
-    image: minio/minio
+    image: cgr.dev/chainguard/minio:latest
     container_name: optimus_minio
     command: server /data --console-address ":9001"
     environment:

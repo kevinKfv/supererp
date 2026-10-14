@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, BrainCircuit, Activity, Bot, Database, Menu, X } from 'lucide-react';
+import { LayoutDashboard, BrainCircuit, Activity, Bot, Database, TrendingUp, Sliders, Menu, X } from 'lucide-react';
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Inicio' },
   { to: '/optimization', icon: Activity, label: 'Optimización', demo: true },
   { to: '/prediction', icon: Database, label: 'Predicción', demo: true },
+  { to: '/simulation', icon: TrendingUp, label: 'Simulación Monte Carlo', demo: true },
+  { to: '/rules', icon: Sliders, label: 'Reglas de Negocio', demo: true },
   { to: '/chat', icon: Bot, label: 'Interpretar instrucciones' },
 ];
 
@@ -45,12 +47,15 @@ export const Layout = () => {
   return (
     <div className="min-h-screen bg-background text-gray-100 md:flex md:h-screen">
       <aside className="hidden h-screen w-72 shrink-0 flex-col border-r border-white/10 bg-surface px-4 py-6 md:flex">
-        <div className="mb-10 flex items-center gap-3 px-3">
+        <div className="mb-8 flex items-center gap-3 px-3">
           <BrainCircuit size={28} aria-hidden="true" className="text-primary" />
           <span className="text-xl font-bold text-white">OptimusAI</span>
         </div>
         <Navigation />
-        <p className="mt-auto px-3 text-xs text-gray-400">Prototipo de análisis empresarial</p>
+        <div className="mt-auto border-t border-white/10 pt-4 px-3">
+          <p className="text-xs font-semibold text-white">Optimus Enterprise</p>
+          <p className="text-xs text-gray-400">Plataforma de Optimización e IA</p>
+        </div>
       </aside>
 
       <div className="border-b border-white/10 bg-surface md:hidden" onKeyDown={(event) => {
