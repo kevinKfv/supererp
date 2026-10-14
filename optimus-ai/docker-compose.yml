@@ -195,6 +195,7 @@ services:
       - optimus_network
     environment:
       - CHOKIDAR_USEPOLLING=true # To enable hot-reload inside Docker on Windows
+      - GATEWAY_URL=http://gateway-service:8000
     volumes:
       - ./frontend:/app
       - /app/node_modules
