@@ -19,5 +19,6 @@ app.add_middleware(
 app.include_router(predict.router, prefix="/api/v1/predict", tags=["Prediction"])
 
 @app.get("/health")
+@app.get("/api/v1/predict/health")
 async def health_check():
     return {"status": "ok", "service": "prediction-engine"}
