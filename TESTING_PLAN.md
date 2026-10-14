@@ -1,4 +1,4 @@
-﻿# Plan de Pruebas Integrales — OptimusAI / SuperERP
+# Plan de Pruebas Integrales — OptimusAI / SuperERP
 
 > **Estado:** ✅ Fases 1 y 2 implementadas y operativas. Fases 3–5 pendientes (E2E, carga, K8s).  
 > **Última actualización:** Octubre 2026
