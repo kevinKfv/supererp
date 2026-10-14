@@ -19,5 +19,6 @@ app.add_middleware(
 app.include_router(chat.router, prefix="/api/v1/chat", tags=["NLP"])
 
 @app.get("/health")
+@app.get("/api/v1/chat/health")
 async def health_check():
     return {"status": "ok", "service": "knowledge-engine"}
