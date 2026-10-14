@@ -19,5 +19,6 @@ app.add_middleware(
 app.include_router(evaluate.router, prefix="/api/v1/rules/evaluate", tags=["Rules"])
 
 @app.get("/health")
+@app.get("/api/v1/rules/health")
 async def health_check():
     return {"status": "ok", "service": "rules-engine"}
