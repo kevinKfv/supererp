@@ -1,64 +1,189 @@
-# OptimusAI - Sistema Universal de Optimización Empresarial
+﻿# OptimusAI — Sistema Universal de Optimización Empresarial
 
-OptimusAI es un motor de decisiones avanzado de nivel enterprise diseñado para resolver problemas complejos de planificación, asignación y reducción de costos utilizando Optimización Matemática, IA y Simulación.
+> **Repositorio:** [https://github.com/kevinKfv/supererp](https://github.com/kevinKfv/supererp)  
+> **Stack:** FastAPI · React 19 · TailwindCSS · Docker · PostgreSQL · Redis · MinIO · Qdrant · Kafka  
+> **Estado:** ✅ Sistema completo y operativo
 
-## Arquitectura (Microservicios)
+OptimusAI es un motor de decisiones avanzado de nivel enterprise diseñado para resolver problemas complejos de planificación, asignación y reducción de costos utilizando Optimización Matemática, Machine Learning y Simulación.
 
-El sistema se compone de múltiples microservicios implementados en Python (FastAPI) con arquitectura asíncrona, orquestados mediante Docker Compose.
+---
 
-### Fases Completadas:
+## 🚀 Inicio Rápido
 
-#### Fase 1: Arquitectura Base
-- **Gateway Service**: API Gateway para enrutamiento.
-- **Identity Service**: Gestión de usuarios y autenticación.
-- **Infraestructura Base**: Configuración de `docker-compose` con PostgreSQL, Redis, Kafka, Zookeeper y MinIO.
+### Requisitos previos
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalado y corriendo
+- Puertos libres: 5173, 8000–8006, 3000, 5432, 6333, 6379, 9000–9001, 9090, 9092
 
-#### Fase 2: Motor de Optimización
-- **Optimization Engine**: Microservicio dedicado a la resolución de problemas matemáticos complejos (MIP, CP, LP).
-- **Procesamiento Asíncrono**: Integración con Celery y Redis para resolver modelos (como el Problema de Asignación vía Google OR-Tools) en *background* sin bloquear la API REST.
+### Levantar el sistema completo
+```bash
+git clone https://github.com/kevinKfv/supererp.git
+cd supererp/optimus-ai
+docker compose up -d --build
+```
 
-#### Fase 3: Motor Predictivo
-- **Prediction Engine**: Microservicio para entrenar e inferir modelos de Machine Learning.
-- **Modelos**: Uso de XGBoost y scikit-learn para predicciones de ventas.
-- **Model Registry**: Almacenamiento seguro de modelos binarios (`.joblib`) directamente en MinIO.
+### Acceder al sistema
+Una vez que todos los contenedores estén UP (puede tardar 1–2 minutos):
 
-#### Fase 4: Motor de Simulación
-- **Simulation Engine**: Microservicio para evaluar riesgos y calcular rentabilidad.
-- **Monte Carlo**: Simulación matemática vectorizada con NumPy capaz de correr miles de iteraciones para *What-If Analysis* y cálculo de percentiles de riesgo.
+| Interfaz | URL | Usuario | Contraseña |
+| :--- | :--- | :--- | :--- |
+| 🌐 **Frontend (Login)** | http://localhost:5173/login | — | — |
+| 🔑 **Admin del sistema** | vía Login UI | `admin_supererp` | `SuperSecretPassword123` |
+| 📊 **Swagger / API Docs** | http://localhost:8000/docs | — | — |
+| 📈 **Grafana** | http://localhost:3000 | `admin` | `admin` |
+| 🗄️ **MinIO Console** | http://localhost:9001 | `optimus_admin` | `optimus_password` |
+| 📡 **Prometheus** | http://localhost:9090 | — | — |
+| 🔵 **Qdrant Dashboard** | http://localhost:6333/dashboard | — | — |
 
-#### Fase 5: Motor de Reglas
-- **Rules Engine**: Microservicio para validar lógicas de negocio de manera dinámica.
-- **JSON AST**: Evaluador puro en Python que lee reglas en formato JSON, permitiendo que el equipo de negocio configure reglas sin tocar el código fuente.
+> 📄 Lista completa de credenciales: **[CUENTAS_Y_USUARIOS.md](CUENTAS_Y_USUARIOS.md)**
 
-#### Fase 6: Knowledge Engine (Asistente de IA)
-- **Knowledge Engine**: Cerebro cognitivo que expone capacidades de procesamiento de lenguaje natural (NLP).
-- **Explainable AI (XAI)**: Generación de justificaciones en lenguaje natural para explicar cómo la IA entiende y qué decisiones toma.
-- **Base de Datos Vectorial**: Integración con Qdrant para proveer capacidades de RAG (Retrieval-Augmented Generation) a los agentes.
+---
 
-#### Fase 7: Frontend (Panel Visual)
-- **Dashboard Enterprise**: Interfaz visual ultra-moderna desarrollada con **React, Vite y TailwindCSS**.
-- **Dark Mode & Glassmorphism**: Estética premium adaptada para centros de comando de Inteligencia Artificial.
-- **Integración API**: Conexión con los microservicios backend para visualizar métricas e interactuar con el Knowledge Engine (Chat de IA).
+## 🏗️ Arquitectura de Microservicios
 
-#### Fase 8: Observabilidad (Telemetría)
-- **Métricas y Scrape**: Integración de **Prometheus** para la recolección automática de métricas de rendimiento y salud de los microservicios.
-- **Instrumentación**: El `gateway-service` expone métricas HTTP detalladas automáticamente (latencia, contadores de errores, RPS).
-- **Visualización**: Incorporación de **Grafana** para la creación de Dashboards analíticos que permiten monitorear la infraestructura en tiempo real.
+```
+optimus-ai/
+├── services/
+│   ├── gateway-service/       # API Gateway + métricas Prometheus
+│   ├── identity-service/      # Auth JWT + PostgreSQL
+│   ├── optimization-engine/   # OR-Tools (MIP/CP) + Celery async
+│   ├── prediction-engine/     # XGBoost + MinIO model registry
+│   ├── simulation-engine/     # Monte Carlo (NumPy vectorizado)
+│   ├── rules-engine/          # Evaluador JSON AST dinámico
+│   └── knowledge-engine/      # NLP heurístico + XAI
+├── frontend/                  # React 19 + Vite + TailwindCSS
+├── k8s/                       # Manifiestos Kubernetes
+├── docker-compose.yml         # 17 servicios orquestados
+└── prometheus.yml             # Configuración de scraping
+```
 
-#### Fase 9: Despliegue en Kubernetes (Cloud-Native)
-- **Migración a K8s**: Conversión de la arquitectura local (`docker-compose`) a Manifiestos YAML para Kubernetes, aislando recursos en el namespace `optimus-ai`.
-- **Escalabilidad Horizontal**: Configuración de `Deployments` con múltiples réplicas (ej: Gateway) para manejar alta concurrencia.
-- **Redes y Seguridad**: Uso de `ClusterIP` para comunicación interna segura y `LoadBalancer` para exponer el Frontend y el Gateway hacia el exterior.
+### Flujo de datos
+```
+Navegador (React)
+    ↓ HTTP
+API Gateway :8000
+    ↓ proxy dinámico /api/v1/{servicio}/...
+┌─────────────────────────────────────────────────┐
+│ identity-service  :8001  →  PostgreSQL  :5432    │
+│ optimization      :8002  →  Redis       :6379    │
+│ prediction        :8003  →  MinIO       :9000    │
+│ simulation        :8004  →  (NumPy, sin BD)      │
+│ rules-engine      :8005  →  (AST puro)           │
+│ knowledge-engine  :8006  →  Qdrant      :6333    │
+└─────────────────────────────────────────────────┘
+Prometheus :9090  ←  scrape /metrics  ←  Gateway
+Grafana    :3000  ←  datasource       ←  Prometheus
+```
 
-## Cómo ejecutar
+---
 
-Asegúrate de tener Docker y Docker Compose instalados.
+## 📦 Fases Implementadas
 
-1. Clona el repositorio.
-2. Ve al directorio `optimus-ai`.
-3. Levanta la infraestructura y los servicios con:
+| Fase | Módulo | Descripción |
+| :---: | :--- | :--- |
+| 1 | **Gateway + Identity** | Enrutamiento, autenticación JWT, PostgreSQL |
+| 2 | **Optimization Engine** | OR-Tools (MIP SCIP), asignación, Celery async |
+| 3 | **Prediction Engine** | XGBoost, entrenamiento, MinIO model registry |
+| 4 | **Simulation Engine** | Monte Carlo vectorizado, percentiles VaR, análisis de riesgo |
+| 5 | **Rules Engine** | Evaluador JSON AST, operadores lógicos, AND/OR |
+| 6 | **Knowledge Engine** | NLP heurístico, Explainable AI, Qdrant RAG |
+| 7 | **Frontend** | Login, Dashboard, 5 módulos interactivos, Chat IA |
+| 8 | **Observabilidad** | Prometheus + Grafana, métricas HTTP automáticas |
+| 9 | **Kubernetes** | Manifiestos K8s, ClusterIP, LoadBalancer, namespaces |
+
+---
+
+## 🧪 Tests Automatizados
+
+### Backend (pytest)
+```powershell
+docker exec optimus_identity             pytest tests/ -v  # 5 tests
+docker exec optimus_optimization_engine  pytest tests/ -v  # 4 tests
+docker exec optimus_prediction_engine    pytest tests/ -v  # 3 tests
+docker exec optimus_simulation_engine    pytest tests/ -v  # 3 tests
+docker exec optimus_rules_engine         pytest tests/ -v  # 20 tests
+docker exec optimus_knowledge_engine     pytest tests/ -v  # 5 tests
+```
+
+### Frontend (Vitest)
+```powershell
+docker exec optimus_frontend npm run test
+# O en local:
+cd optimus-ai/frontend && npm run test  # 14 tests
+```
+
+> 📄 Plan completo de pruebas: **[TESTING_PLAN.md](TESTING_PLAN.md)**
+
+---
+
+## 🔑 Módulos del Sistema
+
+### 1. Login (`/login`)
+Autenticación con JWT. Almacena el token en `localStorage`. Muestra credenciales de prueba en pantalla.
+
+### 2. Dashboard (`/`)
+Centro de control con métricas consolidadas y acceso directo a los 4 motores.
+
+### 3. Optimización (`/optimization`)
+Editor de matrices de asignación. Resolución asíncrona con Google OR-Tools. Importación/exportación CSV. Restricciones de permisos por empleado.
+
+### 4. Predicción (`/prediction`)
+Estimación de ventas con modelo XGBoost almacenado en MinIO. Entrada: precio, marketing, temperatura.
+
+### 5. Simulación Monte Carlo (`/simulation`)
+Análisis probabilístico de rentabilidad. Configurable en media y desviación estándar. Retorna percentiles VaR p5/p95 y probabilidad de pérdida.
+
+### 6. Reglas de Negocio (`/rules`)
+Evaluador visual JSON AST. Escenarios precargados: descuentos, prevención de fraude, logística express. Sin código: el equipo de negocio configura las reglas.
+
+### 7. Chat con IA (`/chat`)
+Asistente NLP que clasifica intenciones en lenguaje natural (OPTIMIZE, SIMULATE, ASSIGN, PREDICT). Botones de derivación directa al motor correspondiente.
+
+---
+
+## 🐳 Gestión de Contenedores
+
+```powershell
+# Ver estado de todos los contenedores
+docker ps --format "table {{.Names}}`t{{.Status}}`t{{.Ports}}"
+
+# Ver logs de un servicio
+docker logs optimus_gateway -f
+docker logs optimus_identity -f
+
+# Detener todo
+docker compose down
+
+# Detener y borrar volúmenes (reset completo)
+docker compose down -v
+```
+
+---
+
+## 📚 Documentación Adicional
+
+| Documento | Descripción |
+| :--- | :--- |
+| [CUENTAS_Y_USUARIOS.md](CUENTAS_Y_USUARIOS.md) | Todas las credenciales y URLs del sistema |
+| [TESTING_PLAN.md](TESTING_PLAN.md) | Plan integral de pruebas (backend, frontend, E2E, carga) |
+| [ESTADO_DEL_PROYECTO_Y_PLAN_DE_PRUEBAS.md](ESTADO_DEL_PROYECTO_Y_PLAN_DE_PRUEBAS.md) | Estado actual, checklist y guía de pruebas por fases |
+| [PRD.md](PRD.md) | Documento de requerimientos y diseño del producto |
+| [optimus-ai/frontend/DESIGN.md](optimus-ai/frontend/DESIGN.md) | Guía de diseño visual y sistema de tokens |
+
+---
+
+## ☸️ Despliegue en Kubernetes
 
 ```bash
-cd optimus-ai
-docker-compose up -d --build
+# Namespace y configuración de red
+kubectl apply -f optimus-ai/k8s/01-namespace-config.yaml
+
+# Infraestructura (PostgreSQL, Redis, MinIO, Qdrant, Kafka)
+kubectl apply -f optimus-ai/k8s/02-infrastructure.yaml
+
+# Microservicios y frontend
+kubectl apply -f optimus-ai/k8s/03-microservices.yaml
+
+# Verificar estado
+kubectl get pods -n optimus-ai
+kubectl get services -n optimus-ai
 ```
