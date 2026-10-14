@@ -1,4 +1,4 @@
-﻿# OptimusAI / SuperERP — Estado del Proyecto, Pendientes y Guía de Pruebas
+# OptimusAI / SuperERP — Estado del Proyecto, Pendientes y Guía de Pruebas
 
 > **Fecha de Actualización:** Octubre 2026
 > **Estado General:** ✅ **Proyecto 100% Completo y Operativo.**
