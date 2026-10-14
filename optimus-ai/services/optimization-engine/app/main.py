@@ -19,5 +19,6 @@ app.add_middleware(
 app.include_router(optimize.router, prefix="/api/v1/optimize", tags=["Optimization"])
 
 @app.get("/health")
+@app.get("/api/v1/optimize/health")
 async def health_check():
     return {"status": "ok", "service": "optimization-engine"}
