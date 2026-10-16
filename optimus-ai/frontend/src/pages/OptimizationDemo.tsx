@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { ClipboardEvent, FormEvent } from 'react';
 import axios from 'axios';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Info, FileSpreadsheet, HelpCircle } from 'lucide-react';
 
 type Assignment = { worker: number; task: number; cost: number };
 type SubmittedMatrix = {
@@ -578,6 +578,66 @@ export const OptimizationDemo = () => {
         <h1 className="mt-4 text-3xl font-bold tracking-tight text-white">Optimización</h1>
         <p className="mt-2 max-w-2xl text-gray-300">Encontrá la asignación de tareas con el menor costo posible.</p>
       </header>
+
+      {/* Apartado Explicativo del Módulo y Guía de Celdas */}
+      <section aria-label="Información del módulo de optimización" className="rounded-2xl border border-primary/30 bg-primary/10 p-5 text-gray-200">
+        <div className="flex items-start gap-3">
+          <Info size={22} className="text-primary mt-0.5 shrink-0" />
+          <div className="space-y-2">
+            <h2 className="text-lg font-bold text-white">¿Qué es este módulo y para qué se usa?</h2>
+            <p className="text-sm leading-relaxed text-gray-300">
+              Este módulo resuelve el <strong>Problema de Asignación Óptima (MIP - Mixed Integer Programming)</strong> utilizando el solver matemático <strong>SCIP de Google OR-Tools</strong> y ejecución en segundo plano mediante <strong>Celery y Redis</strong>.
+            </p>
+            <p className="text-sm leading-relaxed text-gray-300">
+              <strong>¿Para qué se usa?</strong> En cualquier organización con múltiples recursos (empleados, máquinas, vehículos o contratistas) y tareas a cumplir (turnos, rutas, proyectos o despachos), cada recurso tiene un costo o rendimiento distinto. Este motor calcula la <strong>combinación exacta de 1 empleado por tarea que logra el menor costo o tiempo total posible</strong>, eliminando el error humano de las asignaciones manuales.
+            </p>
+          </div>
+        </div>
+
+        {/* Guía Específica de Relleno de Celdas y Tabla */}
+        <div className="mt-5 rounded-xl border border-white/10 bg-surface/90 p-4 space-y-3 text-sm">
+          <div className="flex items-center gap-2 font-semibold text-emerald-300">
+            <FileSpreadsheet size={18} />
+            <span>Guía de Relleno: ¿Qué se debe escribir en cada celda y fila?</span>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2 text-xs leading-relaxed">
+            <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 space-y-1">
+              <span className="font-semibold text-white block">1. Fila Superior (Columnas = Tareas)</span>
+              <p className="text-gray-300">Escribí el nombre de la <strong>tarea, turno, ruta o proyecto</strong> a cubrir (ej: <em>"Auditoría"</em>, <em>"Desarrollo Frontend"</em>, <em>"Mantenimiento"</em>).</p>
+            </div>
+
+            <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 space-y-1">
+              <span className="font-semibold text-white block">2. Columna Izquierda (Filas = Empleados / Recursos)</span>
+              <p className="text-gray-300">Escribí el nombre de la <strong>persona, contratista o máquina</strong> disponible (ej: <em>"Carlos Gómez"</em>, <em>"Ana Martínez"</em>, <em>"Servidor A"</em>).</p>
+            </div>
+
+            <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 space-y-1">
+              <span className="font-semibold text-white block">3. Celda Numérica (Costo o Esfuerzo)</span>
+              <p className="text-gray-300">Ingresá el <strong>costo monetario o tiempo</strong> que ese empleado requiere para hacer esa tarea puntual (ej: <code>150</code> para $150 USD, u <code>8</code> para 8 horas). Debe ser un número finito positivo.</p>
+            </div>
+
+            <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 space-y-1">
+              <span className="font-semibold text-white block">4. Casilla «Puede hacerla»</span>
+              <p className="text-gray-300"><strong>Tildada:</strong> El recurso está habilitado. <strong>Destildada:</strong> Bloquea la asignación porque el empleado no está calificado o no tiene disponibilidad (en Excel se coloca <code>X</code>).</p>
+            </div>
+
+            <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 space-y-1">
+              <span className="font-semibold text-white block">5. Asignación Actual (Opcional)</span>
+              <p className="text-gray-300">Seleccioná quién hace hoy cada tarea en tu empresa para que el sistema calcule el <strong>ahorro exacto</strong> comparado con la solución óptima.</p>
+            </div>
+
+            <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 space-y-1">
+              <span className="font-semibold text-white block">6. Unidad de los Costos</span>
+              <p className="text-gray-300">Indicá la medida compartida por toda la tabla (ej: <code>USD</code>, <code>pesos</code>, <code>horas</code>) para que los totales tengan coherencia de negocio.</p>
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-blue-400/20 bg-blue-400/10 p-2.5 text-xs text-blue-200">
+            💡 <strong>Cómo estructurar tu archivo Excel / CSV para importarlo:</strong> La primera fila debe contener los nombres de las tareas. La primera columna debe tener los nombres de los empleados. Las celdas intermedias contienen los números de costo o la letra <code>X</code> para bloquear una asignación.
+          </div>
+        </div>
+      </section>
 
       <section aria-label="Optimización de asignaciones" className="glass-card p-5 sm:p-6">
         {showForm ? (
