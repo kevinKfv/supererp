@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { Send, Bot, User, Loader2, ArrowRight } from 'lucide-react';
+import { Send, Bot, User, Loader2, ArrowRight, Info, Sparkles } from 'lucide-react';
 
 type Message =
   | { role: 'user'; content: string }
@@ -71,11 +71,40 @@ export const Chat = () => {
         <span className="inline-flex rounded-lg border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-semibold text-blue-200">
           Knowledge Engine
         </span>
-        <h1 className="mt-4 text-3xl font-bold tracking-tight text-white">Interpretar Instrucciones</h1>
+        <h1 className="mt-4 text-3xl font-bold tracking-tight text-white">Interpretar Instrucciones con IA</h1>
         <p className="mt-2 max-w-2xl text-gray-300">
           Escribí tu objetivo de negocio en lenguaje natural. El asistente extraerá la intención, estructurará los parámetros y te derivará al motor correspondiente.
         </p>
       </header>
+
+      {/* Apartado Explicativo del Chat / Knowledge Engine */}
+      <section aria-label="Información del asistente IA" className="rounded-2xl border border-primary/30 bg-primary/10 p-5 text-gray-200">
+        <div className="flex items-start gap-3">
+          <Info size={22} className="text-primary mt-0.5 shrink-0" />
+          <div className="space-y-2">
+            <h2 className="text-lg font-bold text-white">¿Qué es este módulo y para qué se usa?</h2>
+            <p className="text-sm leading-relaxed text-gray-300">
+              Este módulo funciona con el <strong>Knowledge Engine</strong> de OptimusAI. Combina procesamiento de lenguaje natural (NLP) con <strong>Inteligencia Artificial Explicable (XAI - Explainable AI)</strong> y recuperación en base vectorial con <strong>Qdrant</strong>.
+            </p>
+            <p className="text-sm leading-relaxed text-gray-300">
+              <strong>¿Para qué se usa?</strong> Permite a directores y operadores interactuar con toda la suite de optimización mediante lenguaje coloquial. No necesitás saber cómo programar un solver MIP o una simulación: le pedís al chat tu meta y la IA <strong>clasifica la intención (Optimizar, Predecir, Simular o Aplicar Reglas)</strong>, extrae los parámetros numéricos y genera una explicación en lenguaje humano.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-4 rounded-xl border border-white/10 bg-surface/90 p-3.5 text-xs text-gray-300 space-y-1.5">
+          <div className="flex items-center gap-1.5 font-semibold text-emerald-300">
+            <Sparkles size={16} />
+            <span>Ejemplos de frases que podés probar:</span>
+          </div>
+          <ul className="list-disc list-inside space-y-1 text-gray-400">
+            <li><em>"Quiero optimizar los turnos del equipo para reducir los costos al mínimo."</em></li>
+            <li><em>"Predecir las ventas si fijamos el precio en 120 e invertimos 300 en marketing."</em></li>
+            <li><em>"Evaluar el riesgo de un proyecto nuevo con ingresos de 200.000 y costos de 140.000."</em></li>
+            <li><em>"Verificar qué descuento comercial le corresponde a un cliente con compra mayor a 1.000."</em></li>
+          </ul>
+        </div>
+      </section>
 
       <section aria-label="Interpretación de instrucciones" className={`glass-card flex min-w-0 flex-col overflow-hidden ${messages.length ? 'min-h-[24rem] flex-1' : 'min-h-[18rem]'}`}>
         <div role="log" aria-label="Conversación" aria-live="polite" aria-relevant="additions" className="min-h-0 flex-1 space-y-5 overflow-y-auto p-4 sm:p-6">
