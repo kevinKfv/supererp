@@ -124,19 +124,30 @@ Autenticación con JWT. Almacena el token en `localStorage`. Muestra credenciale
 Centro de control con métricas consolidadas y acceso directo a los 4 motores.
 
 ### 3. Optimización (`/optimization`)
-Editor de matrices de asignación. Resolución asíncrona con Google OR-Tools. Importación/exportación CSV. Restricciones de permisos por empleado.
+Editor interactivo del **Problema de Asignación Óptima (SCIP / MIP)** con Google OR-Tools y ejecución asíncrona mediante Celery y Redis.
+* **Guía de Celdas de la Tabla y Excel:**
+  - **Columnas (Fila superior):** Nombre de las **Tareas, turnos, rutas o proyectos** a cubrir (ej: *Auditoría, Desarrollo Frontend, Mantenimiento*).
+  - **Filas (Columna izquierda):** Nombre de los **Empleados, máquinas o contratistas** disponibles (ej: *Carlos Gómez, Ana Martínez*).
+  - **Celdas Numéricas (Intersección):** Valor numérico del **costo monetario o tiempo/esfuerzo** de ese empleado para esa tarea (ej: `150` para $150 USD, u `8` para 8 horas).
+  - **Casilla «Puede hacerla»:** Si está tildada, el empleado es apto. Si está destildada, se bloquea la asignación (en Excel/CSV se representa con la letra **`X`**).
+  - **Asignación Actual (Opcional):** Permite seleccionar quién hace la tarea hoy en tu empresa para calcular el **ahorro económico exacto**.
+  - **Importación / Exportación CSV y Excel:** Permite copiar y pegar directamente bloques de celdas desde Microsoft Excel o Google Sheets.
 
 ### 4. Predicción (`/prediction`)
-Estimación de ventas con modelo XGBoost almacenado en MinIO. Entrada: precio, marketing, temperatura.
+Estimación proyectada de ventas mediante **XGBoost Regressor** con modelos versionados en MinIO Object Storage.
+* **Variables a ingresar:** Precio unitario ($), Inversión publicitaria en marketing ($) y Temperatura/factor estacional (°C).
+* Incluye presets interactivos de lanzamiento, producto premium y campaña balanceada.
 
 ### 5. Simulación Monte Carlo (`/simulation`)
-Análisis probabilístico de rentabilidad. Configurable en media y desviación estándar. Retorna percentiles VaR p5/p95 y probabilidad de pérdida.
+Evaluación probabilística de riesgo corporativo calculando de 10.000 a 50.000 escenarios simultáneos con distribuciones normales vectorizadas (NumPy).
+* **Parámetros:** Ingresos esperados, volatilidad de ingresos (±$), costos esperados y volatilidad de costos (±$).
+* **Métricas clave:** Rentabilidad media, **Peor Escenario (Percentil 5 - VaR)** y **Probabilidad porcentual de entrar en pérdida**.
 
 ### 6. Reglas de Negocio (`/rules`)
-Evaluador visual JSON AST. Escenarios precargados: descuentos, prevención de fraude, logística express. Sin código: el equipo de negocio configura las reglas.
+Evaluador visual dinámico en Python basado en **JSON AST (Abstract Syntax Tree)**. Permite a los analistas de negocio modificar políticas de crédito, prevención de fraude o bonificaciones sin reprogramar código ni redesplegar servidores.
 
 ### 7. Chat con IA (`/chat`)
-Asistente NLP que clasifica intenciones en lenguaje natural (OPTIMIZE, SIMULATE, ASSIGN, PREDICT). Botones de derivación directa al motor correspondiente.
+Motor Cognitivo (Knowledge Engine) que procesa lenguaje natural (NLP) e implementa **Inteligencia Artificial Explicable (XAI)**. Clasifica la intención del usuario (Optimizar, Predecir, Simular, Reglas) y justifica el fundamento de cada decisión.
 
 ---
 
