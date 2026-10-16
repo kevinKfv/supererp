@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Activity, AlertTriangle, Box, TrendingUp, Sliders, Database, ArrowRight, Bot, ShieldCheck } from 'lucide-react';
+import { Activity, AlertTriangle, Box, TrendingUp, Sliders, Database, ArrowRight, Bot, ShieldCheck, Info, Compass } from 'lucide-react';
 
 const metrics = [
   { title: 'Predicciones de Ventas', value: '1,2 M', change: '+12,5 %', icon: TrendingUp },
@@ -64,6 +64,38 @@ export const Dashboard = () => (
       </div>
       <span className="text-xs text-blue-300 font-mono hidden sm:inline">v1.0.0-enterprise</span>
     </div>
+
+    {/* Apartado Explicativo General del Sistema */}
+    <section aria-label="Introducción a la plataforma" className="rounded-2xl border border-primary/30 bg-primary/10 p-5 text-gray-200">
+      <div className="flex items-start gap-3">
+        <Info size={22} className="text-primary mt-0.5 shrink-0" />
+        <div className="space-y-2">
+          <h2 className="text-lg font-bold text-white">¿Qué es SuperERP / OptimusAI y para qué se usa?</h2>
+          <p className="text-sm leading-relaxed text-gray-300">
+            Es una suite empresarial de <strong>Inteligencia Operativa y Optimización Matemática</strong>. En lugar de tomar decisiones corporativas basadas en corazonadas o en hojas de cálculo manuales, el sistema integra <strong>4 motores cuantitativos y un asistente cognitivo</strong> que trabajan de forma coordinada:
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 text-xs leading-relaxed">
+        <div className="rounded-xl border border-white/10 bg-surface/90 p-3.5 space-y-1">
+          <span className="font-semibold text-emerald-300 block">1. Predicción (XGBoost)</span>
+          <p className="text-gray-300">Anticipa la <strong>demanda y ventas</strong> evaluando precio, presupuesto publicitario y factores de estacionalidad.</p>
+        </div>
+        <div className="rounded-xl border border-white/10 bg-surface/90 p-3.5 space-y-1">
+          <span className="font-semibold text-emerald-300 block">2. Simulación (Monte Carlo)</span>
+          <p className="text-gray-300">Genera miles de escenarios para evaluar la <strong>probabilidad de pérdida y el peor caso</strong> antes de invertir.</p>
+        </div>
+        <div className="rounded-xl border border-white/10 bg-surface/90 p-3.5 space-y-1">
+          <span className="font-semibold text-emerald-300 block">3. Optimización (OR-Tools)</span>
+          <p className="text-gray-300">Resuelve la <strong>asignación de recursos y tareas al menor costo</strong> mediante programación matemática entera.</p>
+        </div>
+        <div className="rounded-xl border border-white/10 bg-surface/90 p-3.5 space-y-1">
+          <span className="font-semibold text-emerald-300 block">4. Reglas & NLP (AST + XAI)</span>
+          <p className="text-gray-300">Aplica <strong>políticas de negocio en caliente</strong> y permite consultar el sistema mediante lenguaje natural.</p>
+        </div>
+      </div>
+    </section>
 
     {/* Metrics Overview */}
     <section aria-labelledby="metrics-title" className="space-y-4">
