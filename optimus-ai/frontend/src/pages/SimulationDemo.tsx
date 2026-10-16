@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { Loader2, TrendingUp, AlertTriangle, ShieldCheck, RefreshCw, BarChart3, HelpCircle } from 'lucide-react';
+import { Loader2, TrendingUp, AlertTriangle, ShieldCheck, RefreshCw, BarChart3, HelpCircle, Info } from 'lucide-react';
 
 type SimulationResult = {
   iterations_run: number;
@@ -97,6 +97,53 @@ export const SimulationDemo = () => {
           Evaluación probabilística de rentabilidad y riesgo corporativo calculando miles de escenarios aleatorios.
         </p>
       </header>
+
+      {/* Apartado Explicativo del Módulo de Simulación */}
+      <section aria-label="Información del módulo de simulación" className="rounded-2xl border border-primary/30 bg-primary/10 p-5 text-gray-200">
+        <div className="flex items-start gap-3">
+          <Info size={22} className="text-primary mt-0.5 shrink-0" />
+          <div className="space-y-2">
+            <h2 className="text-lg font-bold text-white">¿Qué es este módulo y para qué se usa?</h2>
+            <p className="text-sm leading-relaxed text-gray-300">
+              Este módulo ejecuta una <strong>Simulación de Monte Carlo estocástica vectorizada con NumPy</strong>. En los negocios reales, los ingresos y costos futuros nunca son cifras estáticas: están sujetos a incertidumbre, inflación, retrasos y volatilidad de la demanda.
+            </p>
+            <p className="text-sm leading-relaxed text-gray-300">
+              <strong>¿Para qué se usa?</strong> Genera entre 10.000 y 50.000 escenarios posibles en milisegundos para calcular no solo la rentabilidad esperada, sino también el <strong>peor escenario estadístico (Percentil 5 - VaR / Value at Risk)</strong> y la <strong>probabilidad exacta de entrar en pérdida financiera</strong> antes de aprobar una inversión o proyecto.
+            </p>
+          </div>
+        </div>
+
+        {/* Guía de Parámetros e Interpretación */}
+        <div className="mt-5 rounded-xl border border-white/10 bg-surface/90 p-4 space-y-3 text-sm">
+          <div className="flex items-center gap-2 font-semibold text-emerald-300">
+            <BarChart3 size={18} />
+            <span>Guía de Parámetros: ¿Qué significa cada valor a ingresar?</span>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 text-xs leading-relaxed">
+            <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 space-y-1">
+              <span className="font-semibold text-white block">1. Ingresos Esperados ($)</span>
+              <p className="text-gray-300">La facturación promedio que esperás que genere el proyecto o unidad de negocio.</p>
+            </div>
+            <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 space-y-1">
+              <span className="font-semibold text-white block">2. Volatilidad de Ingresos (±$)</span>
+              <p className="text-gray-300">Desviación estándar de los ingresos. A mayor valor, mayor es la incertidumbre de mercado.</p>
+            </div>
+            <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 space-y-1">
+              <span className="font-semibold text-white block">3. Costos Esperados ($)</span>
+              <p className="text-gray-300">El presupuesto o gasto operativo medio estimado para llevar a cabo la operación.</p>
+            </div>
+            <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 space-y-1">
+              <span className="font-semibold text-white block">4. Volatilidad de Costos (±$)</span>
+              <p className="text-gray-300">Margen de imprevistos o sobrecostos posibles (ej: variación de insumos o tipo de cambio).</p>
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-blue-400/20 bg-blue-400/10 p-2.5 text-xs text-blue-200">
+            📊 <strong>Cómo interpretar el resultado:</strong> Si la <em>Probabilidad de Pérdida</em> supera el 15% o el <em>Peor Escenario (P5)</em> es negativo, el proyecto se considera de <strong>Alto Riesgo</strong> y requiere mitigación previa.
+          </div>
+        </div>
+      </section>
 
       {/* Presets */}
       <section className="glass-card p-5">
