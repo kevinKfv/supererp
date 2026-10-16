@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { Loader2, Sliders, CheckCircle2, XCircle, Zap, Play, HelpCircle } from 'lucide-react';
+import { Loader2, Sliders, CheckCircle2, XCircle, Zap, Play, HelpCircle, Info } from 'lucide-react';
 
 type RuleCondition = {
   field: string;
@@ -170,6 +170,45 @@ export const RulesDemo = () => {
           Evaluador puro en Python (JSON AST) que valida condiciones dinámicas y dispara acciones operativas sin modificar código fuente.
         </p>
       </header>
+
+      {/* Apartado Explicativo del Módulo de Reglas */}
+      <section aria-label="Información del motor de reglas" className="rounded-2xl border border-primary/30 bg-primary/10 p-5 text-gray-200">
+        <div className="flex items-start gap-3">
+          <Info size={22} className="text-primary mt-0.5 shrink-0" />
+          <div className="space-y-2">
+            <h2 className="text-lg font-bold text-white">¿Qué es este módulo y para qué se usa?</h2>
+            <p className="text-sm leading-relaxed text-gray-300">
+              Este módulo implementa un <strong>Evaluador de Reglas de Negocio basado en JSON AST (Abstract Syntax Tree)</strong>. Procesa estructuras compuestas con operadores relacionales (<code>==</code>, <code>!=</code>, <code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code>, <code>&lt;=</code>, <code>in</code>) y conectores lógicos (<code>AND</code>, <code>OR</code>, <code>NOT</code>).
+            </p>
+            <p className="text-sm leading-relaxed text-gray-300">
+              <strong>¿Para qué se usa?</strong> En las empresas, las políticas de crédito, tarifas comerciales, límites de fraude o protocolos de despacho cambian constantemente. Este motor permite modificar las reglas en caliente vía JSON <strong>sin necesidad de recompilar, programar o redesplegar el backend</strong>.
+            </p>
+          </div>
+        </div>
+
+        {/* Guía de Componentes */}
+        <div className="mt-5 rounded-xl border border-white/10 bg-surface/90 p-4 space-y-3 text-sm">
+          <div className="flex items-center gap-2 font-semibold text-emerald-300">
+            <Sliders size={18} />
+            <span>Guía de Estructura: ¿Cómo se componen las reglas?</span>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-3 text-xs leading-relaxed">
+            <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 space-y-1">
+              <span className="font-semibold text-white block">1. Hechos (Facts / JSON)</span>
+              <p className="text-gray-300">Son los datos del evento a evaluar (ej: monto de compra, tipo de cliente, si es nuevo dispositivo o scoring crediticio).</p>
+            </div>
+            <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 space-y-1">
+              <span className="font-semibold text-white block">2. Condiciones (Rules / AST)</span>
+              <p className="text-gray-300">Las premisas que deben verificarse. Pueden anidar múltiples condiciones con conectores <code>AND</code> o <code>OR</code>.</p>
+            </div>
+            <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 space-y-1">
+              <span className="font-semibold text-white block">3. Acciones Disparadas</span>
+              <p className="text-gray-300">Las instrucciones automáticas que el sistema ejecuta si la regla se cumple (ej: <code>APLICAR_DESCUENTO_10%</code>).</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Preset Scenarios */}
       <section className="glass-card p-5">
