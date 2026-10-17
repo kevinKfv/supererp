@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { ClipboardEvent, FormEvent } from 'react';
 import axios from 'axios';
-import { Loader2, Info, FileSpreadsheet, HelpCircle } from 'lucide-react';
+import { Loader2, Info, FileSpreadsheet, HelpCircle, Sparkles, Layers, Users, Calculator, Check, X } from 'lucide-react';
 
 type Assignment = { worker: number; task: number; cost: number };
 type SubmittedMatrix = {
@@ -296,6 +296,60 @@ export const OptimizationDemo = () => {
     setInvalidCell(null);
     setCsvError(null);
     setPasteFeedback(null);
+  };
+
+  const loadPreset3x3 = () => {
+    setWorkerNames(['Ana Martínez', 'Carlos Ruiz', 'Sofía Gómez']);
+    setTaskNames(['Auditoría', 'Desarrollo', 'Soporte']);
+    setMatrix([
+      ['120', '190', '80'],
+      ['90', '130', '110'],
+      ['150', '85', '95'],
+    ]);
+    setAllowed([
+      [true, true, true],
+      [true, true, true],
+      [true, true, true],
+    ]);
+    setCurrentAssignment(['0', '1', '2']);
+    setUnitName('USD');
+    setSameUnitConfirmed(true);
+    clearFormErrors();
+    setComparisonError(false);
+  };
+
+  const loadPreset4x4 = () => {
+    setWorkerNames(['Lucía Pérez', 'Martín Silva', 'Elena Costa', 'Diego Morales']);
+    setTaskNames(['Diseño UI', 'Backend API', 'DevOps Cloud', 'QA Testing']);
+    setMatrix([
+      ['70', '140', '180', '90'],
+      ['130', '95', '110', '85'],
+      ['160', '120', '80', '100'],
+      ['85', '110', '150', '65'],
+    ]);
+    setAllowed([
+      [true, true, false, true],
+      [false, true, true, true],
+      [false, true, true, false],
+      [true, false, false, true],
+    ]);
+    setCurrentAssignment(['0', '1', '2', '3']);
+    setUnitName('USD');
+    setSameUnitConfirmed(true);
+    clearFormErrors();
+    setComparisonError(false);
+  };
+
+  const resetToBasic = () => {
+    setWorkerNames(['Empleado 1', 'Empleado 2']);
+    setTaskNames(['Tarea 1', 'Tarea 2']);
+    setMatrix([['4', '3'], ['2', '1']]);
+    setAllowed([[true, true], [true, true]]);
+    setCurrentAssignment(['', '']);
+    setUnitName('unidades');
+    setSameUnitConfirmed(true);
+    clearFormErrors();
+    setComparisonError(false);
   };
 
   const addWorker = () => {
@@ -649,6 +703,40 @@ export const OptimizationDemo = () => {
               {!submittedMatrix && !isPolling && <p className="mt-2 text-sm text-amber-200">No se recuperó la matriz anterior. Podés usar el ejemplo; el resultado se conserva hasta iniciar otra ejecución.</p>}
             </div>}
 
+            {/* Barra de Plantillas Rápidas para Carga Inmediata */}
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3.5">
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-gray-300">
+                <Sparkles size={16} className="text-primary" />
+                <span>Plantillas Rápidas:</span>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={loadPreset3x3}
+                  disabled={isSubmitting}
+                  className="rounded-lg border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-medium text-blue-200 hover:bg-primary/20 transition-colors"
+                >
+                  ⚡ Cargar Ejemplo 3x3 (Pymes)
+                </button>
+                <button
+                  type="button"
+                  onClick={loadPreset4x4}
+                  disabled={isSubmitting}
+                  className="rounded-lg border border-purple-400/40 bg-purple-500/10 px-3 py-1.5 text-xs font-medium text-purple-200 hover:bg-purple-500/20 transition-colors"
+                >
+                  🏢 Cargar Ejemplo 4x4 (Tecnología)
+                </button>
+                <button
+                  type="button"
+                  onClick={resetToBasic}
+                  disabled={isSubmitting}
+                  className="rounded-lg border border-white/20 bg-white/5 px-2.5 py-1.5 text-xs text-gray-300 hover:bg-white/10 transition-colors"
+                >
+                  🔄 Restablecer 2x2
+                </button>
+              </div>
+            </div>
+
             {operationError && <p role="alert" className="mt-4 rounded-xl border border-red-400/40 bg-red-400/10 p-4 text-red-100">{operationError}</p>}
             {validationError && <p role="alert" className="mt-4 rounded-xl border border-red-400/40 bg-red-400/10 p-4 text-red-100">{validationError}</p>}
             {csvError && <p role="alert" className="mt-4 rounded-xl border border-red-400/40 bg-red-400/10 p-4 text-red-100">{csvError}</p>}
@@ -686,65 +774,184 @@ export const OptimizationDemo = () => {
               </section>
             )}
 
-            <div className="mt-5 rounded-xl border border-white/10 md:max-h-[60vh] md:overflow-auto">
+            <div className="mt-5 rounded-xl border border-white/10 bg-surface/50 md:max-h-[60vh] md:overflow-auto shadow-inner">
               <table className="block w-full border-collapse text-left text-sm md:table md:min-w-max">
                 <thead className="block text-gray-200 md:table-header-group">
                   <tr className="block p-4 md:table-row md:p-0">
-                    <th scope="col" className="block pb-3 text-left font-semibold md:sticky md:left-0 md:top-0 md:z-30 md:table-cell md:align-top md:bg-surface md:px-3 md:py-3 md:pb-3"><span className="md:hidden">Tareas</span><span className="hidden md:inline">Empleado</span></th>
-                    {taskNames.map((name, column) => <th key={column} scope="col" className="block pb-3 text-left font-semibold md:sticky md:top-0 md:z-20 md:table-cell md:bg-surface md:px-3 md:py-3">
-                      <span className="mb-1 block text-xs md:hidden">Tarea</span>
-                      <div className="relative md:w-40">
-                        <input type="text" value={name} onChange={(event) => setTaskNames((names) => names.map((item, index) => index === column ? event.target.value : item))} aria-label={'Nombre de la tarea ' + (column + 1)} disabled={isSubmitting} maxLength={80} className={'premium-input min-h-11 w-full' + (taskNames.length > 1 ? ' pr-12' : '')} />
-                        {taskNames.length > 1 && <button type="button" onClick={() => removeTask(column)} disabled={isSubmitting} aria-label={'Quitar tarea: ' + (name.trim() || 'Tarea ' + (column + 1))} title={'Quitar tarea: ' + (name.trim() || 'Tarea ' + (column + 1))} className="absolute right-1 top-1 flex h-9 w-9 items-center justify-center rounded-md text-lg text-gray-300 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50">−</button>}
+                    <th scope="col" className="block pb-3 text-left font-semibold md:sticky md:left-0 md:top-0 md:z-30 md:table-cell md:align-top md:bg-surface md:px-4 md:py-3.5 border-b border-white/10">
+                      <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-gray-400">
+                        <Users size={14} className="text-secondary" />
+                        <span className="hidden md:inline">Empleados \ Tareas</span>
+                        <span className="md:hidden">Tareas</span>
                       </div>
-                      <div className="mt-2 flex gap-1 md:w-40">
-                        <button type="button" onClick={() => updateBulkAllowed('task', column, true)} disabled={isSubmitting} aria-label={'Permitir a todos los empleados en ' + (name.trim() || 'Tarea ' + (column + 1))} className="min-h-9 flex-1 rounded-md border border-white/20 px-1 text-xs font-medium hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50">Permitir</button>
-                        <button type="button" onClick={() => updateBulkAllowed('task', column, false)} disabled={isSubmitting} aria-label={'Bloquear a todos los empleados en ' + (name.trim() || 'Tarea ' + (column + 1))} className="min-h-9 flex-1 rounded-md border border-white/20 px-1 text-xs font-medium hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50">Bloquear</button>
-                      </div>
-                    </th>)}
-                    <th scope="col" className="block text-left md:sticky md:top-0 md:z-20 md:table-cell md:w-28 md:align-top md:bg-surface md:px-3 md:py-3"><button type="button" onClick={addTask} disabled={isSubmitting} aria-label="Agregar tarea" className="min-h-11 whitespace-nowrap rounded-lg border border-white/20 px-3 py-2 text-sm font-medium text-white hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50">+ Tarea</button></th>
+                    </th>
+                    {taskNames.map((name, column) => (
+                      <th key={column} scope="col" className="block pb-3 text-left font-semibold md:sticky md:top-0 md:z-20 md:table-cell md:bg-surface md:px-3 md:py-3.5 border-b border-white/10">
+                        <div className="flex items-center justify-between gap-1 mb-1.5 md:w-44">
+                          <span className="inline-flex items-center gap-1 rounded bg-blue-500/10 px-1.5 py-0.5 text-[11px] font-semibold text-blue-300">
+                            <Layers size={11} /> Tarea {column + 1}
+                          </span>
+                          {taskNames.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => removeTask(column)}
+                              disabled={isSubmitting}
+                              aria-label={'Quitar tarea: ' + (name.trim() || 'Tarea ' + (column + 1))}
+                              title={'Quitar tarea: ' + (name.trim() || 'Tarea ' + (column + 1))}
+                              className="flex h-5 w-5 items-center justify-center rounded text-gray-400 hover:bg-white/10 hover:text-red-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50 transition-colors"
+                            >
+                              −
+                            </button>
+                          )}
+                        </div>
+                        <div className="relative md:w-44">
+                          <input
+                            type="text"
+                            value={name}
+                            onChange={(event) => setTaskNames((names) => names.map((item, index) => index === column ? event.target.value : item))}
+                            aria-label={'Nombre de la tarea ' + (column + 1)}
+                            disabled={isSubmitting}
+                            maxLength={80}
+                            placeholder={'Tarea ' + (column + 1)}
+                            className="premium-input min-h-10 w-full text-xs font-medium"
+                          />
+                        </div>
+                        <div className="mt-1.5 flex gap-1 md:w-44">
+                          <button
+                            type="button"
+                            onClick={() => updateBulkAllowed('task', column, true)}
+                            disabled={isSubmitting}
+                            aria-label={'Permitir a todos los empleados en ' + (name.trim() || 'Tarea ' + (column + 1))}
+                            className="min-h-7 flex-1 rounded border border-emerald-500/30 bg-emerald-500/10 px-1 text-[11px] font-medium text-emerald-300 hover:bg-emerald-500/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50 transition-colors"
+                          >
+                            Permitir
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => updateBulkAllowed('task', column, false)}
+                            disabled={isSubmitting}
+                            aria-label={'Bloquear a todos los empleados en ' + (name.trim() || 'Tarea ' + (column + 1))}
+                            className="min-h-7 flex-1 rounded border border-red-500/30 bg-red-500/10 px-1 text-[11px] font-medium text-red-300 hover:bg-red-500/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50 transition-colors"
+                          >
+                            Bloquear
+                          </button>
+                        </div>
+                      </th>
+                    ))}
+                    <th scope="col" className="block text-left md:sticky md:top-0 md:z-20 md:table-cell md:w-28 md:align-top md:bg-surface md:px-3 md:py-3.5 border-b border-white/10">
+                      <button
+                        type="button"
+                        onClick={addTask}
+                        disabled={isSubmitting}
+                        aria-label="Agregar tarea"
+                        className="min-h-10 whitespace-nowrap rounded-lg border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-blue-200 hover:bg-primary/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50 transition-colors"
+                      >
+                        + Tarea
+                      </button>
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="block space-y-3 px-3 pb-3 text-gray-200 md:table-row-group md:space-y-0 md:divide-y md:divide-white/10 md:px-0 md:pb-0">
                   {matrix.map((row, rowIndex) => (
-                    <tr key={rowIndex} className="block min-w-0 rounded-lg border border-white/10 bg-white/[0.02] p-3 md:table-row md:rounded-none md:border-0 md:bg-transparent md:p-0">
-                      <th scope="row" className="block min-w-0 pb-3 text-left font-medium md:sticky md:left-0 md:z-10 md:table-cell md:align-top md:bg-surface md:px-3 md:py-2 md:pb-2">
-                        <span className="mb-1 block text-xs md:hidden">Empleado</span>
-                        <div className="relative md:w-40">
-                          <input type="text" value={workerNames[rowIndex]} onChange={(event) => setWorkerNames((names) => names.map((item, index) => index === rowIndex ? event.target.value : item))} aria-label={'Nombre del empleado ' + (rowIndex + 1)} disabled={isSubmitting} maxLength={80} className={'premium-input min-h-11 w-full' + (matrix.length > 1 ? ' pr-12' : '')} />
-                          {matrix.length > 1 && <button type="button" onClick={() => removeWorker(rowIndex)} disabled={isSubmitting} aria-label={'Quitar empleado: ' + (workerNames[rowIndex].trim() || 'Empleado ' + (rowIndex + 1))} title={'Quitar empleado: ' + (workerNames[rowIndex].trim() || 'Empleado ' + (rowIndex + 1))} className="absolute right-1 top-1 flex h-9 w-9 items-center justify-center rounded-md text-lg text-gray-300 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50">−</button>}
+                    <tr key={rowIndex} className="block min-w-0 rounded-lg border border-white/10 bg-white/[0.02] p-3 md:table-row md:rounded-none md:border-0 md:bg-transparent md:p-0 hover:bg-white/[0.015] transition-colors">
+                      <th scope="row" className="block min-w-0 pb-3 text-left font-medium md:sticky md:left-0 md:z-10 md:table-cell md:align-top md:bg-surface md:px-4 md:py-3 border-r border-white/5">
+                        <div className="flex items-center justify-between gap-1 mb-1.5 md:w-40">
+                          <span className="inline-flex items-center gap-1 rounded bg-purple-500/10 px-1.5 py-0.5 text-[11px] font-semibold text-purple-300">
+                            <Users size={11} /> Empleado {rowIndex + 1}
+                          </span>
+                          {matrix.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => removeWorker(rowIndex)}
+                              disabled={isSubmitting}
+                              aria-label={'Quitar empleado: ' + (workerNames[rowIndex].trim() || 'Empleado ' + (rowIndex + 1))}
+                              title={'Quitar empleado: ' + (workerNames[rowIndex].trim() || 'Empleado ' + (rowIndex + 1))}
+                              className="flex h-5 w-5 items-center justify-center rounded text-gray-400 hover:bg-white/10 hover:text-red-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50 transition-colors"
+                            >
+                              −
+                            </button>
+                          )}
                         </div>
-                        <div className="mt-2 flex gap-1 md:w-40">
-                          <button type="button" onClick={() => updateBulkAllowed('worker', rowIndex, true)} disabled={isSubmitting} aria-label={'Permitir todas las tareas a ' + (workerNames[rowIndex].trim() || 'Empleado ' + (rowIndex + 1))} className="min-h-9 flex-1 rounded-md border border-white/20 px-1 text-xs font-medium hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50">Permitir</button>
-                          <button type="button" onClick={() => updateBulkAllowed('worker', rowIndex, false)} disabled={isSubmitting} aria-label={'Bloquear todas las tareas a ' + (workerNames[rowIndex].trim() || 'Empleado ' + (rowIndex + 1))} className="min-h-9 flex-1 rounded-md border border-white/20 px-1 text-xs font-medium hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50">Bloquear</button>
+                        <div className="relative md:w-40">
+                          <input
+                            type="text"
+                            value={workerNames[rowIndex]}
+                            onChange={(event) => setWorkerNames((names) => names.map((item, index) => index === rowIndex ? event.target.value : item))}
+                            aria-label={'Nombre del empleado ' + (rowIndex + 1)}
+                            disabled={isSubmitting}
+                            maxLength={80}
+                            placeholder={'Empleado ' + (rowIndex + 1)}
+                            className="premium-input min-h-10 w-full text-xs font-medium"
+                          />
+                        </div>
+                        <div className="mt-1.5 flex gap-1 md:w-40">
+                          <button
+                            type="button"
+                            onClick={() => updateBulkAllowed('worker', rowIndex, true)}
+                            disabled={isSubmitting}
+                            aria-label={'Permitir todas las tareas a ' + (workerNames[rowIndex].trim() || 'Empleado ' + (rowIndex + 1))}
+                            className="min-h-7 flex-1 rounded border border-emerald-500/30 bg-emerald-500/10 px-1 text-[11px] font-medium text-emerald-300 hover:bg-emerald-500/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50 transition-colors"
+                          >
+                            Permitir
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => updateBulkAllowed('worker', rowIndex, false)}
+                            disabled={isSubmitting}
+                            aria-label={'Bloquear todas las tareas a ' + (workerNames[rowIndex].trim() || 'Empleado ' + (rowIndex + 1))}
+                            className="min-h-7 flex-1 rounded border border-red-500/30 bg-red-500/10 px-1 text-[11px] font-medium text-red-300 hover:bg-red-500/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50 transition-colors"
+                          >
+                            Bloquear
+                          </button>
                         </div>
                       </th>
                       {row.map((value, columnIndex) => {
+                        const isCellAllowed = allowed[rowIndex][columnIndex];
                         const invalid = invalidCell?.row === rowIndex && invalidCell.column === columnIndex;
                         const workerLabel = workerNames[rowIndex].trim() || 'Empleado ' + (rowIndex + 1);
                         const taskLabel = taskNames[columnIndex].trim() || 'Tarea ' + (columnIndex + 1);
                         return (
-                          <td key={columnIndex} className="block min-w-0 border-t border-white/10 py-3 last:pb-0 md:table-cell md:align-top md:border-0 md:px-3 md:py-2">
+                          <td key={columnIndex} className="block min-w-0 border-t border-white/10 py-3 last:pb-0 md:table-cell md:align-top md:border-0 md:px-3 md:py-3">
                             <span className="mb-1 block font-medium md:hidden">{taskLabel}</span>
-                            <input
-                              id={'cost-' + rowIndex + '-' + columnIndex}
-                              type="number"
-                              step="any"
-                              value={allowed[rowIndex][columnIndex] ? value : ''}
-                              onChange={(event) => updateCost(rowIndex, columnIndex, event.target.value)}
-                              onPaste={(event) => pasteCosts(event, rowIndex, columnIndex)}
-                              aria-label={'Costo de ' + workerLabel + ' para ' + taskLabel}
-                              aria-invalid={invalid}
-                              aria-describedby={invalid ? 'cost-error-' + rowIndex + '-' + columnIndex : undefined}
-                              disabled={isSubmitting || !allowed[rowIndex][columnIndex]}
-                              placeholder={allowed[rowIndex][columnIndex] ? undefined : 'No asignable'}
-                              className="premium-input min-h-11 md:w-40"
-                            />
-                            <label className="mt-2 flex items-center gap-2 text-xs text-gray-200">
-                              <input type="checkbox" checked={allowed[rowIndex][columnIndex]} onChange={(event) => updateAllowed(rowIndex, columnIndex, event.target.checked)} aria-label={workerLabel + ' puede hacer ' + taskLabel} disabled={isSubmitting} className="h-4 w-4 accent-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" />
-                              Puede hacerla
-                            </label>
-                            {invalid && <p id={'cost-error-' + rowIndex + '-' + columnIndex} className="mt-1 max-w-28 text-xs text-red-200">Ingresá un número válido.</p>}
+                            <div className={`rounded-lg border p-2 transition-all md:w-44 ${
+                              isCellAllowed
+                                ? 'border-white/10 bg-white/[0.02] focus-within:border-primary/60 focus-within:bg-primary/[0.02]'
+                                : 'border-dashed border-red-500/20 bg-red-500/[0.02] opacity-75'
+                            }`}>
+                              <div className="relative">
+                                <input
+                                  id={'cost-' + rowIndex + '-' + columnIndex}
+                                  type="number"
+                                  step="any"
+                                  value={isCellAllowed ? value : ''}
+                                  onChange={(event) => updateCost(rowIndex, columnIndex, event.target.value)}
+                                  onPaste={(event) => pasteCosts(event, rowIndex, columnIndex)}
+                                  aria-label={'Costo de ' + workerLabel + ' para ' + taskLabel}
+                                  aria-invalid={invalid}
+                                  aria-describedby={invalid ? 'cost-error-' + rowIndex + '-' + columnIndex : undefined}
+                                  disabled={isSubmitting || !isCellAllowed}
+                                  placeholder={isCellAllowed ? (unitName ? `0.00 ${unitName}` : '0.00') : 'No asignable'}
+                                  className={`premium-input min-h-10 w-full text-sm font-mono ${!isCellAllowed ? 'cursor-not-allowed bg-black/20 text-gray-500 placeholder-gray-500' : ''}`}
+                                />
+                              </div>
+                              <label className="mt-2 flex items-center justify-between gap-2 text-xs cursor-pointer select-none">
+                                <span className="flex items-center gap-1.5 text-gray-300">
+                                  <input
+                                    type="checkbox"
+                                    checked={isCellAllowed}
+                                    onChange={(event) => updateAllowed(rowIndex, columnIndex, event.target.checked)}
+                                    aria-label={workerLabel + ' puede hacer ' + taskLabel}
+                                    disabled={isSubmitting}
+                                    className="h-4 w-4 rounded accent-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary cursor-pointer"
+                                  />
+                                  <span className={isCellAllowed ? 'text-gray-200' : 'text-gray-400'}>Puede hacerla</span>
+                                </span>
+                                <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${isCellAllowed ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}`}>
+                                  {isCellAllowed ? 'Habilitada' : 'X Bloqueada'}
+                                </span>
+                              </label>
+                              {invalid && <p id={'cost-error-' + rowIndex + '-' + columnIndex} className="mt-1 text-xs text-red-200">Ingresá un número válido.</p>}
+                            </div>
                           </td>
                         );
                       })}
@@ -752,7 +959,18 @@ export const OptimizationDemo = () => {
                     </tr>
                   ))}
                   <tr className="block px-3 pb-3 md:table-row md:p-0">
-                    <th scope="row" className="block text-left md:sticky md:left-0 md:table-cell md:bg-surface md:px-3 md:py-3"><button id="add-worker" type="button" disabled={isSubmitting} onClick={addWorker} aria-label="Agregar empleado" className="min-h-11 whitespace-nowrap rounded-lg border border-white/20 px-3 py-2 text-sm font-medium text-white hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50">+ Empleado</button></th>
+                    <th scope="row" className="block text-left md:sticky md:left-0 md:table-cell md:bg-surface md:px-4 md:py-3.5">
+                      <button
+                        id="add-worker"
+                        type="button"
+                        disabled={isSubmitting}
+                        onClick={addWorker}
+                        aria-label="Agregar empleado"
+                        className="min-h-10 whitespace-nowrap rounded-lg border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-blue-200 hover:bg-primary/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50 transition-colors"
+                      >
+                        + Empleado
+                      </button>
+                    </th>
                     <td colSpan={taskNames.length + 1} className="hidden md:table-cell" />
                   </tr>
                 </tbody>
@@ -761,34 +979,133 @@ export const OptimizationDemo = () => {
             {pasteFeedback && <p role={pasteFeedback.error ? 'alert' : 'status'} className={'mt-3 text-sm ' + (pasteFeedback.error ? 'text-red-200' : 'text-emerald-300')}>{pasteFeedback.text}</p>}
             {feasibilityMessage && <p id="eligibility-guidance" tabIndex={-1} role="status" className="mt-3 rounded-lg border border-amber-300/40 bg-amber-300/10 p-3 text-sm text-amber-100">{feasibilityMessage} Revisá las casillas «Puede hacerla».</p>}
 
-            <section aria-labelledby="current-heading" className="mt-7">
-              <h3 id="current-heading" className="text-lg font-semibold text-white">Asignación actual (opcional)</h3>
-              <p className="mt-1 text-sm text-gray-300">Elegí un empleado por tarea para comparar costos. Dejá todo sin seleccionar si no querés comparar.</p>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <section aria-labelledby="current-heading" className="mt-8 rounded-xl border border-white/10 bg-white/[0.02] p-5 shadow-sm">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/20 text-primary">
+                      <Users size={16} />
+                    </div>
+                    <h3 id="current-heading" className="text-lg font-semibold text-white">Asignación actual (opcional)</h3>
+                  </div>
+                  <p className="mt-1 text-sm text-gray-300">
+                    Elegí un empleado por tarea para comparar costos. Dejá todo sin seleccionar si no querés comparar.
+                  </p>
+                </div>
+
+                {currentAssignment.some((value) => value !== '') && (
+                  <button
+                    type="button"
+                    onClick={() => { setCurrentAssignment(Array(taskNames.length).fill('')); setComparisonError(false); }}
+                    className="min-h-9 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-1.5 text-xs font-medium text-red-200 hover:bg-red-500/20 underline underline-offset-4 transition-colors"
+                  >
+                    Quitar comparación
+                  </button>
+                )}
+              </div>
+
+              {/* Barra de progreso y resumen en vivo */}
+              <div className="mt-4 rounded-lg border border-white/10 bg-surface/80 p-3.5">
+                <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <span className="font-medium text-gray-300">
+                    Progreso de asignación: <strong className="text-white">{selectedCount}</strong> de <strong className="text-white">{taskNames.length}</strong> tareas
+                  </span>
+                  {draftCurrentCost !== null && unitName.trim() && (
+                    <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 font-semibold text-emerald-300">
+                      Costo actual acumulado: {draftCurrentCost} {unitName.trim()}
+                    </span>
+                  )}
+                </div>
+                <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+                  <div
+                    className="h-full bg-primary transition-all duration-300"
+                    style={{ width: `${(selectedCount / taskNames.length) * 100}%` }}
+                  />
+                </div>
+                <p role="status" className="mt-2.5 text-sm text-gray-200">
+                  {selectedCount === 0
+                    ? 'Sin comparación seleccionada.'
+                    : draftCurrentCost !== null && unitName.trim()
+                      ? `Asignadas ${selectedCount} de ${taskNames.length} tareas. Costo actual: ${draftCurrentCost} ${unitName.trim()}.`
+                      : selectedCount < taskNames.length
+                        ? `Asignadas ${selectedCount} de ${taskNames.length} tareas. Faltan ${taskNames.length - selectedCount}.`
+                        : !unitName.trim()
+                          ? 'Escribí la unidad de los costos para ver el total actual.'
+                          : 'Revisá los costos y permisos de la asignación actual para calcular el total.'}
+                </p>
+              </div>
+
+              {/* Tarjetas individuales de asignación por tarea */}
+              <div className="mt-4 grid gap-3 sm:grid-cols-2 md:grid-cols-3">
                 {taskNames.map((name, task) => {
                   const worker = currentAssignment[task];
+                  const assignedWorkerIndex = worker !== '' ? Number(worker) : null;
+                  const assignedCost = assignedWorkerIndex !== null ? matrix[assignedWorkerIndex]?.[task] : null;
                   const invalid = comparisonError && currentAssignment.some((selected) => selected !== '') &&
                     (!worker || currentAssignment.indexOf(worker) !== task || !allowed[Number(worker)]?.[task]);
-                  return <label key={task} className="block text-sm text-gray-200">
-                    <span className="mb-2 block">{name || 'Tarea ' + (task + 1)}</span>
-                    <select id={'current-assignment-' + task} value={worker} onChange={(event) => { setCurrentAssignment((values) => values.map((value, index) => index === task ? event.target.value : value)); setComparisonError(false); }} disabled={isSubmitting} aria-invalid={invalid} aria-describedby={invalid ? 'current-error-' + task : undefined} aria-label={'Empleado actual para ' + (name || 'tarea ' + (task + 1))} className="premium-input min-h-11">
-                      <option value="">Sin seleccionar</option>
-                      {workerNames.map((workerName, index) => allowed[index][task] && <option key={index} value={index} disabled={currentAssignment.some((selected, otherTask) => otherTask !== task && selected === String(index))}>{workerName || 'Empleado ' + (index + 1)}</option>)}
-                    </select>
-                    {invalid && <span id={'current-error-' + task} className="mt-2 block text-sm text-red-200">{!worker ? 'Elegí un empleado o quitá la comparación.' : 'Este empleado ya está asignado a otra tarea.'}</span>}
-                  </label>;
+
+                  return (
+                    <div
+                      key={task}
+                      className={`flex flex-col justify-between rounded-xl border p-3.5 transition-all ${
+                        assignedWorkerIndex !== null
+                          ? 'border-primary/40 bg-primary/[0.04]'
+                          : 'border-white/10 bg-white/[0.02]'
+                      }`}
+                    >
+                      <div>
+                        <div className="flex items-center justify-between gap-1 mb-2">
+                          <span className="flex items-center gap-1.5 text-xs font-semibold text-white">
+                            <span className="flex h-5 w-5 items-center justify-center rounded bg-blue-500/20 text-[10px] text-blue-300 font-mono">
+                              T{task + 1}
+                            </span>
+                            <span className="truncate">{name || 'Tarea ' + (task + 1)}</span>
+                          </span>
+                          {assignedWorkerIndex !== null && assignedCost !== undefined && (
+                            <span className="rounded bg-white/10 px-1.5 py-0.5 text-[11px] font-mono text-emerald-300">
+                              {assignedCost} {unitName || ''}
+                            </span>
+                          )}
+                        </div>
+
+                        <label htmlFor={'current-assignment-' + task} className="block text-xs text-gray-300">
+                          <span className="mb-1 block text-gray-400 font-medium">{name || 'Tarea ' + (task + 1)}</span>
+                          <select
+                            id={'current-assignment-' + task}
+                            value={worker}
+                            onChange={(event) => {
+                              setCurrentAssignment((values) => values.map((value, index) => index === task ? event.target.value : value));
+                              setComparisonError(false);
+                            }}
+                            disabled={isSubmitting}
+                            aria-invalid={invalid}
+                            aria-describedby={invalid ? 'current-error-' + task : undefined}
+                            aria-label={'Empleado actual para ' + (name || 'tarea ' + (task + 1))}
+                            className="premium-input min-h-11 w-full text-sm"
+                          >
+                            <option value="">Sin seleccionar</option>
+                            {workerNames.map((workerName, index) => allowed[index][task] && (
+                              <option
+                                key={index}
+                                value={index}
+                                disabled={currentAssignment.some((selected, otherTask) => otherTask !== task && selected === String(index))}
+                              >
+                                {workerName || 'Empleado ' + (index + 1)} (costo: {matrix[index]?.[task] ?? '-'}{unitName ? ' ' + unitName : ''})
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                      </div>
+
+                      {invalid && (
+                        <span id={'current-error-' + task} className="mt-2 block text-xs font-medium text-red-300">
+                          {!worker ? 'Elegí un empleado o quitá la comparación.' : 'Este empleado ya está asignado a otra tarea.'}
+                        </span>
+                      )}
+                    </div>
+                  );
                 })}
               </div>
-              <p role="status" className="mt-3 text-sm text-gray-200">{selectedCount === 0
-                ? 'Sin comparación seleccionada.'
-                : draftCurrentCost !== null && unitName.trim()
-                  ? `Asignadas ${selectedCount} de ${taskNames.length} tareas. Costo actual: ${draftCurrentCost} ${unitName.trim()}.`
-                  : selectedCount < taskNames.length
-                    ? `Asignadas ${selectedCount} de ${taskNames.length} tareas. Faltan ${taskNames.length - selectedCount}.`
-                    : !unitName.trim()
-                      ? 'Escribí la unidad de los costos para ver el total actual.'
-                      : 'Revisá los costos y permisos de la asignación actual para calcular el total.'}</p>
-              {currentAssignment.some((value) => value !== '') && <button type="button" onClick={() => { setCurrentAssignment(Array(taskNames.length).fill('')); setComparisonError(false); }} className="mt-3 min-h-11 text-sm text-blue-200 underline underline-offset-4">Quitar comparación</button>}
             </section>
 
             <div className="mt-6">
