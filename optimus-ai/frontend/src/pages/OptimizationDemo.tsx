@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { ClipboardEvent, FormEvent } from 'react';
 import axios from 'axios';
-import { Loader2, Info, FileSpreadsheet, HelpCircle, Sparkles, Layers, Users, Calculator, Check, X } from 'lucide-react';
+import { Loader2, Info, FileSpreadsheet, Sparkles, Layers, Users, Calculator } from 'lucide-react';
 
 type Assignment = { worker: number; task: number; cost: number };
 type SubmittedMatrix = {
@@ -626,23 +626,32 @@ export const OptimizationDemo = () => {
   };
 
   return (
-    <div className="max-w-4xl space-y-6">
-      <header>
-        <span className="inline-flex rounded-lg border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-semibold text-blue-200">Demo integrada</span>
-        <h1 className="mt-4 text-3xl font-bold tracking-tight text-white">Optimización</h1>
-        <p className="mt-2 max-w-2xl text-gray-300">Encontrá la asignación de tareas con el menor costo posible.</p>
+    <div className="max-w-4xl space-y-8 pb-12">
+      <header className="space-y-3">
+        <div className="flex items-center gap-2">
+          <span className="badge-glow">
+            <Calculator size={13} className="text-primary" /> Google OR-Tools
+          </span>
+          <span className="badge-success">
+            <Layers size={13} className="text-emerald-400" /> Solver MIP / SCIP
+          </span>
+        </div>
+        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">Optimización</h1>
+        <p className="max-w-2xl text-slate-300 text-sm sm:text-base leading-relaxed">Encontrá la asignación de tareas con el menor costo posible.</p>
       </header>
 
       {/* Apartado Explicativo del Módulo y Guía de Celdas */}
-      <section aria-label="Información del módulo de optimización" className="rounded-2xl border border-primary/30 bg-primary/10 p-5 text-gray-200">
-        <div className="flex items-start gap-3">
-          <Info size={22} className="text-primary mt-0.5 shrink-0" />
+      <section aria-label="Información del módulo de optimización" className="rounded-3xl border border-primary/25 bg-gradient-to-br from-primary/10 via-surface/85 to-surfaceHighlight/50 p-6 sm:p-7 text-slate-200 backdrop-blur-xl shadow-xl">
+        <div className="flex items-start gap-4">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/20 border border-primary/40 text-primary shadow-glow-primary">
+            <Info size={22} className="shrink-0" />
+          </div>
           <div className="space-y-2">
-            <h2 className="text-lg font-bold text-white">¿Qué es este módulo y para qué se usa?</h2>
-            <p className="text-sm leading-relaxed text-gray-300">
+            <h2 className="text-xl font-bold text-white tracking-tight">¿Qué es este módulo y para qué se usa?</h2>
+            <p className="text-sm leading-relaxed text-slate-300">
               Este módulo resuelve el <strong>Problema de Asignación Óptima (MIP - Mixed Integer Programming)</strong> utilizando el solver matemático <strong>SCIP de Google OR-Tools</strong> y ejecución en segundo plano mediante <strong>Celery y Redis</strong>.
             </p>
-            <p className="text-sm leading-relaxed text-gray-300">
+            <p className="text-sm leading-relaxed text-slate-300">
               <strong>¿Para qué se usa?</strong> En cualquier organización con múltiples recursos (empleados, máquinas, vehículos o contratistas) y tareas a cumplir (turnos, rutas, proyectos o despachos), cada recurso tiene un costo o rendimiento distinto. Este motor calcula la <strong>combinación exacta de 1 empleado por tarea que logra el menor costo o tiempo total posible</strong>, eliminando el error humano de las asignaciones manuales.
             </p>
           </div>
@@ -1120,52 +1129,61 @@ export const OptimizationDemo = () => {
               {unitError && <p id="unit-error" role="alert" className="mt-2 text-sm text-red-200">Confirmá la unidad común antes de iniciar la optimización.</p>}
             </div>
 
-            <button type="submit" disabled={isSubmitting} className="mt-6 min-h-11 rounded-lg bg-primaryDark px-4 py-2.5 font-semibold text-white hover:bg-blue-800 disabled:opacity-50">
+            <button type="submit" disabled={isSubmitting} className="mt-6 min-h-12 rounded-xl bg-gradient-to-r from-blue-600 via-primary to-blue-500 px-6 font-semibold text-white shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:brightness-110 active:scale-98 transition-all disabled:opacity-50">
               {isSubmitting ? 'Iniciando optimización…' : 'Iniciar optimización'}
             </button>
           </form>
         ) : (
           <div>
-            <h2 className="text-xl font-semibold text-white">Ejecución de optimización</h2>
-            <p className="mt-2 break-all text-sm text-gray-300">ID de ejecución: <code className="text-white">{task?.id}</code></p>
+            <h2 className="text-xl font-bold text-white tracking-tight">Ejecución de optimización</h2>
+            <p className="mt-2 break-all text-xs text-slate-300 font-mono bg-black/40 p-2.5 rounded-xl border border-white/10">ID de ejecución: <code className="text-primary font-bold">{task?.id}</code></p>
             {storageWarning && <p role="alert" className="mt-4 text-sm text-amber-200">No se pudo guardar este ID en el navegador. La ejecución no se recuperará tras recargar la página.</p>}
-            <p className="mt-2 text-sm text-gray-300">Estado: {result ? 'Solución disponible' : infeasible ? 'No factible' : operationError ? 'Error' : timedOut ? 'Consulta pausada' : status === 'STARTED' ? 'Procesando' : status === 'RETRY' ? 'Reintentando' : 'En cola'}</p>
+            <p className="mt-3 text-xs uppercase tracking-wider font-semibold text-slate-400">Estado: <span className="text-white font-bold">{result ? 'Solución disponible' : infeasible ? 'No factible' : operationError ? 'Error' : timedOut ? 'Consulta pausada' : status === 'STARTED' ? 'Procesando' : status === 'RETRY' ? 'Reintentando' : 'En cola'}</span></p>
 
             <div aria-live="polite" aria-atomic="true" className="mt-6">
               {result ? (
-                <div>
-                  <p className="text-sm font-semibold text-emerald-300">Solución {result.status === 'OPTIMAL' ? 'óptima' : 'factible'}</p>
-                  {changedTasks !== null && <p className="mt-2 text-sm text-gray-200">{changedTasks === 0 ? 'La propuesta mantiene la asignación actual.' : `La propuesta cambia ${changedTasks} de ${result.assignments.length} tareas.`}</p>}
-                  <section className="mt-4 min-w-0 rounded-xl border border-white/10 p-4">
-                    <h3 className="text-lg font-semibold text-white">{submittedMatrix?.currentAssignment ? 'Comparación por tarea' : 'Asignación propuesta'}</h3>
-                    <ul className="mt-3 divide-y divide-white/10 text-sm text-gray-200">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <span className="rounded-md bg-emerald-500/20 px-2.5 py-1 text-xs font-bold text-emerald-300 border border-emerald-500/40">
+                      Solución {result.status === 'OPTIMAL' ? 'óptima' : 'factible'}
+                    </span>
+                    {changedTasks !== null && <span className="text-xs text-slate-300">{changedTasks === 0 ? 'La propuesta mantiene la asignación actual.' : `La propuesta cambia ${changedTasks} de ${result.assignments.length} tareas.`}</span>}
+                  </div>
+                  <section className="min-w-0 rounded-2xl border border-white/10 bg-black/30 p-5">
+                    <h3 className="text-base font-bold text-white uppercase tracking-wider">{submittedMatrix?.currentAssignment ? 'Comparación por tarea' : 'Asignación propuesta'}</h3>
+                    <ul className="mt-4 divide-y divide-white/10 text-sm text-slate-200">
                       {sortedAssignments.map((assignment) => {
                         const currentWorker = submittedMatrix?.currentAssignment?.[assignment.task];
                         const changed = currentWorker !== undefined && currentWorker !== assignment.worker;
                         return <li key={assignment.task} className={'grid min-w-0 gap-2 py-3 ' + (currentWorker !== undefined ? 'md:grid-cols-3' : 'md:grid-cols-2')}>
                           <span className="break-words font-semibold text-white">{submittedMatrix?.taskNames[assignment.task] || 'Tarea ' + (assignment.task + 1)}</span>
-                          {currentWorker !== undefined && <span className="min-w-0 break-words"><span className="block text-xs text-gray-400">Actual</span>{submittedMatrix?.workerNames[currentWorker]} · Costo: {submittedMatrix?.costs[currentWorker][assignment.task]}{resultUnit && ' ' + resultUnit}</span>}
-                          <span className="min-w-0 break-words"><span className="block text-xs text-gray-400">Propuesta</span>{submittedMatrix?.workerNames[assignment.worker] || 'Empleado ' + (assignment.worker + 1)} · Costo: {assignment.cost}{resultUnit && ' ' + resultUnit}{changed && <span className="ml-2 text-amber-200">Cambio</span>}</span>
+                          {currentWorker !== undefined && <span className="min-w-0 break-words"><span className="block text-xs text-slate-400">Actual</span>{submittedMatrix?.workerNames[currentWorker]} · Costo: {submittedMatrix?.costs[currentWorker][assignment.task]}{resultUnit && ' ' + resultUnit}</span>}
+                          <span className="min-w-0 break-words"><span className="block text-xs text-slate-400">Propuesta</span>{submittedMatrix?.workerNames[assignment.worker] || 'Empleado ' + (assignment.worker + 1)} · Costo: {assignment.cost}{resultUnit && ' ' + resultUnit}{changed && <span className="ml-2 rounded bg-amber-500/20 px-1.5 py-0.5 text-xs text-amber-300 font-semibold border border-amber-500/30">Cambio</span>}</span>
                         </li>;
                       })}
                     </ul>
-                    <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 border-t border-white/10 pt-3 font-semibold text-white">
-                      {currentCost !== undefined && <p>Total actual: {currentCost}{resultUnit && ' ' + resultUnit}</p>}
-                      <p>Total propuesto: {result.total_cost}{resultUnit && ' ' + resultUnit}</p>
+                    <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 border-t border-white/10 pt-4 font-bold text-white text-base">
+                      {currentCost !== undefined && <p className="text-slate-200">Total actual: {currentCost}{resultUnit && ' ' + resultUnit}</p>}
+                      <p className="text-emerald-400">Total propuesto: {result.total_cost}{resultUnit && ' ' + resultUnit}</p>
                     </div>
                   </section>
-                  {currentCost !== undefined && <p className="mt-4 font-semibold text-white">{currentCost >= result.total_cost ? 'Ahorro estimado' : 'La propuesta cuesta más que la asignación actual'}: {Math.abs(Number((currentCost - result.total_cost).toFixed(6)))}{resultUnit && ' ' + resultUnit}</p>}
-                  {unusedWorkers.length > 0 && <p className="mt-3 text-sm text-gray-300">Sin tarea en la propuesta: {unusedWorkers.join(', ')}.</p>}
-                  {!submittedMatrix && <p className="mt-4 text-sm text-amber-200">No se pudo recuperar el contexto de esta ejecución. Los nombres, la unidad y la comparación no están disponibles.</p>}
+                  {currentCost !== undefined && (
+                    <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 font-bold text-white flex items-center justify-between">
+                      <span>{currentCost >= result.total_cost ? 'Ahorro estimado' : 'La propuesta cuesta más que la asignación actual'}:</span>
+                      <span className="font-mono text-xl text-emerald-400">{Math.abs(Number((currentCost - result.total_cost).toFixed(6)))}{resultUnit && ' ' + resultUnit}</span>
+                    </div>
+                  )}
+                  {unusedWorkers.length > 0 && <p className="text-xs text-slate-400">Sin tarea en la propuesta: {unusedWorkers.join(', ')}.</p>}
+                  {!submittedMatrix && <p className="text-xs text-amber-200">No se pudo recuperar el contexto de esta ejecución. Los nombres, la unidad y la comparación no están disponibles.</p>}
                 </div>
               ) : infeasible ? (
-                <p className="rounded-xl border border-amber-300/40 bg-amber-300/10 p-4 text-amber-100">No factible: el motor no encontró una asignación que cumpla las condiciones. {infeasibilityDetail || 'Cada tarea necesita un empleado permitido y distinto. Revisá las casillas «Puede hacerla» antes de iniciar otra optimización.'}</p>
+                <p className="rounded-2xl border border-amber-500/40 bg-amber-500/15 p-4 text-amber-100 font-medium">No factible: el motor no encontró una asignación que cumpla las condiciones. {infeasibilityDetail || 'Cada tarea necesita un empleado permitido y distinto. Revisá las casillas «Puede hacerla» antes de iniciar otra optimización.'}</p>
               ) : operationError ? (
-                <p role="alert" className="rounded-xl border border-red-400/40 bg-red-400/10 p-4 text-red-100">{operationError}</p>
+                <p role="alert" className="rounded-2xl border border-red-500/40 bg-red-500/15 p-4 text-red-100 font-medium">{operationError}</p>
               ) : timedOut ? (
-                <p className="rounded-xl border border-amber-300/40 bg-amber-300/10 p-4 text-amber-100">La ejecución puede seguir en proceso. Consultá el mismo ID de nuevo; no hace falta iniciar otra tarea.</p>
+                <p className="rounded-2xl border border-amber-500/40 bg-amber-500/15 p-4 text-amber-100 font-medium">La ejecución puede seguir en proceso. Consultá el mismo ID de nuevo; no hace falta iniciar otra tarea.</p>
               ) : (
-                <p role="status" className="flex items-center gap-3 text-sm text-gray-300">
+                <p role="status" className="flex items-center gap-3 text-sm text-slate-300 animate-pulse">
                   <Loader2 size={20} aria-hidden="true" className="animate-spin text-primary" />
                   {status === 'STARTED' ? 'Procesando la matriz…' : status === 'RETRY' ? 'Reintentando el cálculo…' : 'Consultando el estado…'}
                 </p>
@@ -1174,10 +1192,10 @@ export const OptimizationDemo = () => {
 
             <div className="mt-6 flex flex-wrap gap-3">
               {!isPolling && !result && !infeasible && status !== 'SUCCESS' && status !== 'FAILURE' && (
-                <button type="button" onClick={consultAgain} className="min-h-11 rounded-lg bg-primaryDark px-4 py-2.5 font-semibold text-white hover:bg-blue-800">Consultar de nuevo</button>
+                <button type="button" onClick={consultAgain} className="min-h-12 rounded-xl bg-gradient-to-r from-blue-600 via-primary to-blue-500 px-5 font-semibold text-white shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:brightness-110 transition-all">Consultar de nuevo</button>
               )}
-              <button type="button" onClick={editOptimization} className={`min-h-11 rounded-lg px-4 py-2.5 font-semibold text-white ${result ? 'bg-primaryDark hover:bg-blue-800' : 'border border-white/20 hover:bg-white/5'}`}>{submittedMatrix ? 'Editar matriz' : 'Crear otra matriz'}</button>
-              {result && <button type="button" onClick={downloadResultCsv} className="min-h-11 rounded-lg border border-white/20 px-4 py-2.5 font-semibold text-white hover:bg-white/5">Descargar resultado CSV</button>}
+              <button type="button" onClick={editOptimization} className={`min-h-12 rounded-xl px-5 font-semibold text-white transition-all ${result ? 'bg-gradient-to-r from-blue-600 to-primary shadow-md hover:brightness-110' : 'border border-white/20 hover:bg-white/10'}`}>{submittedMatrix ? 'Editar matriz' : 'Crear otra matriz'}</button>
+              {result && <button type="button" onClick={downloadResultCsv} className="min-h-12 rounded-xl border border-white/20 px-5 font-semibold text-white hover:bg-white/10 transition-all">Descargar resultado CSV</button>}
             </div>
           </div>
         )}

@@ -1,6 +1,16 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { Loader2, TrendingUp, Info, HelpCircle, Sparkles, BarChart2 } from 'lucide-react';
+import { 
+  Loader2, 
+  Info, 
+  Sparkles, 
+  BarChart2, 
+  DollarSign, 
+  Megaphone, 
+  Thermometer, 
+  CheckCircle2,
+  Zap
+} from 'lucide-react';
 
 const presets = [
   { name: 'Campaña Balanceada', price: 100, marketing: 150, temp: 24, desc: 'Precio promedio con inversión publicitaria estándar.' },
@@ -51,151 +61,206 @@ export const PredictionDemo = () => {
   };
 
   return (
-    <div className="max-w-4xl space-y-6">
-      <header>
-        <span className="inline-flex rounded-lg border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-semibold text-blue-200">
-          Machine Learning
-        </span>
-        <h1 className="mt-4 text-3xl font-bold tracking-tight text-white">Predicción de Demanda y Ventas</h1>
-        <p className="mt-2 max-w-2xl text-gray-300">
+    <div className="max-w-4xl space-y-8 pb-12">
+      {/* Header */}
+      <header className="space-y-3">
+        <div className="flex items-center gap-2">
+          <span className="badge-glow">
+            <Zap size={13} className="text-primary" /> Machine Learning
+          </span>
+          <span className="badge-success">
+            <CheckCircle2 size={13} className="text-emerald-400" /> MinIO Conectado
+          </span>
+        </div>
+        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">Predicción de Demanda y Ventas</h1>
+        <p className="max-w-2xl text-slate-300 text-sm sm:text-base leading-relaxed">
           Estimación proyectada de ventas mediante árboles de decisión potenciados por gradiente (XGBoost).
         </p>
       </header>
 
       {/* Apartado Explicativo del Módulo */}
-      <section aria-label="Información del módulo de predicción" className="rounded-2xl border border-primary/30 bg-primary/10 p-5 text-gray-200">
-        <div className="flex items-start gap-3">
-          <Info size={22} className="text-primary mt-0.5 shrink-0" />
+      <section aria-label="Información del módulo de predicción" className="rounded-3xl border border-primary/25 bg-gradient-to-br from-primary/10 via-surface/85 to-surfaceHighlight/50 p-6 sm:p-7 text-slate-200 backdrop-blur-xl shadow-xl">
+        <div className="flex items-start gap-4">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/20 border border-primary/40 text-primary shadow-glow-primary">
+            <Info size={22} className="shrink-0" />
+          </div>
           <div className="space-y-2">
-            <h2 className="text-lg font-bold text-white">¿Qué es este módulo y para qué se usa?</h2>
-            <p className="text-sm leading-relaxed text-gray-300">
+            <h2 className="text-xl font-bold text-white tracking-tight">¿Qué es este módulo y para qué se usa?</h2>
+            <p className="text-sm leading-relaxed text-slate-300">
               Este módulo utiliza un modelo de Machine Learning supervisado <strong>XGBoost Regressor</strong> entrenado con datos históricos y almacenado como artefacto en el Object Storage <strong>MinIO</strong>.
             </p>
-            <p className="text-sm leading-relaxed text-gray-300">
+            <p className="text-sm leading-relaxed text-slate-300">
               <strong>¿Para qué se usa?</strong> Permite a directores comerciales y gerentes de operaciones <strong>anticipar la demanda antes de que suceda</strong>. Al ingresar variables del plan comercial (precio y publicidad) y del entorno (temperatura/estacionalidad), el modelo calcula cuántas unidades se venderán, evitando roturas de stock y optimizando el retorno de inversión publicitaria.
             </p>
           </div>
         </div>
 
         {/* Guía de Variables */}
-        <div className="mt-5 rounded-xl border border-white/10 bg-surface/90 p-4 space-y-3 text-sm">
-          <div className="flex items-center gap-2 font-semibold text-emerald-300">
+        <div className="mt-6 rounded-2xl border border-white/10 bg-black/40 p-5 space-y-3">
+          <div className="flex items-center gap-2 font-bold text-emerald-300 text-sm">
             <BarChart2 size={18} />
             <span>Guía de variables: ¿Qué representa cada campo?</span>
           </div>
           <div className="grid gap-3 sm:grid-cols-3 text-xs leading-relaxed">
-            <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 space-y-1">
-              <span className="font-semibold text-white block">1. Precio del Producto ($)</span>
-              <p className="text-gray-300">Valor de venta al público. De acuerdo a la elasticidad de la demanda, precios más altos suelen reducir el volumen de ventas.</p>
+            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3.5 space-y-1.5">
+              <span className="font-bold text-white flex items-center gap-1.5">
+                <DollarSign size={14} className="text-emerald-400" /> 1. Precio del Producto ($)
+              </span>
+              <p className="text-slate-300">Valor de venta al público. De acuerdo a la elasticidad de la demanda, precios más altos suelen reducir el volumen de ventas.</p>
             </div>
-            <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 space-y-1">
-              <span className="font-semibold text-white block">2. Inversión en Marketing ($)</span>
-              <p className="text-gray-300">Presupuesto en publicidad digital y promociones. A mayor pauta, se incrementa el alcance y la tasa de conversión.</p>
+            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3.5 space-y-1.5">
+              <span className="font-bold text-white flex items-center gap-1.5">
+                <Megaphone size={14} className="text-blue-400" /> 2. Inversión en Marketing ($)
+              </span>
+              <p className="text-slate-300">Presupuesto en publicidad digital y promociones. A mayor pauta, se incrementa el alcance y la tasa de conversión.</p>
             </div>
-            <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 space-y-1">
-              <span className="font-semibold text-white block">3. Temperatura (°C / Clima)</span>
-              <p className="text-gray-300">Factor de estacionalidad externa que influye en el comportamiento del consumidor (días templados favorecen el consumo).</p>
+            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3.5 space-y-1.5">
+              <span className="font-bold text-white flex items-center gap-1.5">
+                <Thermometer size={14} className="text-amber-400" /> 3. Temperatura (°C / Clima)
+              </span>
+              <p className="text-slate-300">Factor de estacionalidad externa que influye en el comportamiento del consumidor (días templados favorecen el consumo).</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Formulario y Pruebas */}
-      <section aria-label="Ejemplo de predicción" className="glass-card p-5 sm:p-6 space-y-5">
-        <div>
-          <h2 className="text-xl font-semibold text-white">Parámetros del Escenario de Ventas</h2>
-          <p className="mt-1 text-sm text-gray-300">Modificá los valores o seleccioná un escenario predefinido para evaluar la respuesta del modelo.</p>
+      <section aria-label="Ejemplo de predicción" className="glass-card p-6 sm:p-8 space-y-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
+          <div>
+            <h2 className="text-xl font-bold text-white tracking-tight">Parámetros del Escenario de Ventas</h2>
+            <p className="mt-1 text-xs sm:text-sm text-slate-300">Modificá los valores o seleccioná un escenario predefinido para evaluar la respuesta del modelo.</p>
+          </div>
+          <span className="font-mono text-xs text-primary bg-primary/10 border border-primary/30 px-2.5 py-1 rounded-lg">
+            Inferencia :8003
+          </span>
         </div>
 
         {/* Presets Rápidos */}
-        <div className="flex flex-wrap gap-2">
-          {presets.map((p) => (
-            <button
-              key={p.name}
-              type="button"
-              disabled={isLoading}
-              onClick={() => {
-                setPrice(p.price);
-                setMarketing(p.marketing);
-                setTemp(p.temp);
-                setShowResult(false);
-              }}
-              className="rounded-lg border border-white/20 bg-white/5 px-3 py-1.5 text-xs text-white hover:bg-white/10 transition-colors"
-            >
-              ⚡ {p.name}
-            </button>
-          ))}
+        <div className="space-y-2">
+          <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Escenarios Rápidos:</span>
+          <div className="flex flex-wrap gap-2.5">
+            {presets.map((p) => (
+              <button
+                key={p.name}
+                type="button"
+                disabled={isLoading}
+                onClick={() => {
+                  setPrice(p.price);
+                  setMarketing(p.marketing);
+                  setTemp(p.temp);
+                  setShowResult(false);
+                }}
+                className="group flex items-center gap-1.5 rounded-xl border border-white/15 bg-white/5 px-3.5 py-2 text-xs font-medium text-slate-200 hover:border-primary/40 hover:bg-white/10 hover:text-white transition-all active:scale-95"
+              >
+                <Sparkles size={13} className="text-primary group-hover:scale-110 transition-transform" />
+                <span>{p.name}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-3">
-          <div className="space-y-1.5">
-            <label htmlFor="pred-price" className="block text-sm font-medium text-gray-200">
-              Precio ($)
-            </label>
+        {/* Inputs */}
+        <div className="grid gap-5 sm:grid-cols-3">
+          <div className="rounded-2xl border border-white/10 bg-black/30 p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <label htmlFor="pred-price" className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                <DollarSign size={14} className="text-emerald-400" /> Precio ($)
+              </label>
+              <span className="font-mono text-xs text-emerald-400 font-bold">${price}</span>
+            </div>
             <input
               id="pred-price"
               type="number"
               value={price}
               onChange={(e) => setPrice(Number(e.target.value))}
               disabled={isLoading}
-              className="premium-input w-full min-h-11"
+              className="premium-input font-mono text-lg font-bold"
             />
-            <span className="text-xs text-gray-400">Rango típico: 50 a 200</span>
+            <span className="block text-[11px] text-slate-400">Rango típico: 50 a 200</span>
           </div>
 
-          <div className="space-y-1.5">
-            <label htmlFor="pred-marketing" className="block text-sm font-medium text-gray-200">
-              Inversión en Marketing ($)
-            </label>
+          <div className="rounded-2xl border border-white/10 bg-black/30 p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <label htmlFor="pred-marketing" className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                <Megaphone size={14} className="text-blue-400" /> Inversión en Marketing ($)
+              </label>
+              <span className="font-mono text-xs text-blue-400 font-bold">${marketing}</span>
+            </div>
             <input
               id="pred-marketing"
               type="number"
               value={marketing}
               onChange={(e) => setMarketing(Number(e.target.value))}
               disabled={isLoading}
-              className="premium-input w-full min-h-11"
+              className="premium-input font-mono text-lg font-bold"
             />
-            <span className="text-xs text-gray-400">Pauta publicitaria mensual</span>
+            <span className="block text-[11px] text-slate-400">Pauta publicitaria mensual</span>
           </div>
 
-          <div className="space-y-1.5">
-            <label htmlFor="pred-temp" className="block text-sm font-medium text-gray-200">
-              Temperatura (°C)
-            </label>
+          <div className="rounded-2xl border border-white/10 bg-black/30 p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <label htmlFor="pred-temp" className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                <Thermometer size={14} className="text-amber-400" /> Temperatura (°C)
+              </label>
+              <span className="font-mono text-xs text-amber-400 font-bold">{temp}°C</span>
+            </div>
             <input
               id="pred-temp"
               type="number"
               value={temp}
               onChange={(e) => setTemp(Number(e.target.value))}
               disabled={isLoading}
-              className="premium-input w-full min-h-11"
+              className="premium-input font-mono text-lg font-bold"
             />
-            <span className="text-xs text-gray-400">Clima o índice estacional</span>
+            <span className="block text-[11px] text-slate-400">Clima o índice estacional</span>
           </div>
         </div>
 
+        {/* Dynamic Results & Status */}
         <div aria-live="polite" aria-atomic="true">
           {error && (
-            <div role="alert" className="rounded-xl border border-red-400/40 bg-red-400/10 p-4 text-red-100">
-              <p>{error}</p>
+            <div role="alert" className="rounded-2xl border border-red-500/40 bg-red-500/15 p-4 text-red-200 animate-slide-up">
+              <p className="font-medium">{error}</p>
             </div>
           )}
 
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center gap-3 py-8 text-gray-300">
+            <div className="flex flex-col items-center justify-center gap-3 py-10 text-slate-300 rounded-2xl border border-white/10 bg-white/[0.02]">
               <Loader2 size={36} aria-hidden="true" className="animate-spin text-primary" />
-              <p>Consultando modelo XGBoost en el backend...</p>
+              <p className="font-medium text-sm">Consultando modelo XGBoost en el backend...</p>
+              <span className="text-xs text-slate-400 font-mono">Inferencia ML en /api/v1/predict/predict</span>
             </div>
           ) : showResult && predictionResult !== null ? (
-            <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-5 space-y-2">
-              <div className="flex items-center gap-2 text-emerald-400 font-semibold text-sm">
-                <Sparkles size={18} />
-                <span>Predicción calculada con éxito</span>
+            <div className="rounded-2xl border border-emerald-500/40 bg-gradient-to-br from-emerald-500/15 via-slate-900/90 to-surfaceHighlight p-6 space-y-4 shadow-glow-emerald animate-slide-up">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+                  <Sparkles size={18} />
+                  <span>Predicción calculada con éxito</span>
+                </div>
+                <span className="rounded-md bg-emerald-500/20 px-2 py-0.5 text-xs font-mono font-bold text-emerald-300 border border-emerald-500/40">
+                  XGBoost Inferred
+                </span>
               </div>
-              <p className="text-sm text-gray-300">Para un precio de ${price}, marketing de ${marketing} y {temp}°C:</p>
-              <p className="text-4xl font-extrabold text-white">
-                {predictionResult.toFixed(1)}
-                <span className="text-base font-normal text-gray-300"> unidades de ventas estimadas</span>
+
+              <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4 border-t border-white/10 pt-4">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Demanda Estimada:</p>
+                  <p className="text-4xl sm:text-5xl font-extrabold text-white font-mono mt-1">
+                    {predictionResult.toFixed(1)}
+                    <span className="text-base font-normal text-slate-300 ml-2">unidades de ventas estimadas</span>
+                  </p>
+                </div>
+                <div className="rounded-xl border border-white/10 bg-black/40 p-3 text-right">
+                  <span className="text-[11px] text-slate-400 block">Facturación Proyectada</span>
+                  <span className="font-mono text-xl font-bold text-emerald-400">
+                    ${(predictionResult * price).toLocaleString('es-AR', { maximumFractionDigits: 0 })}
+                  </span>
+                </div>
+              </div>
+
+              <p className="text-xs text-slate-300">
+                Escenario evaluado: Precio <strong className="text-white">${price}</strong>, Marketing <strong className="text-white">${marketing}</strong> y Temperatura de <strong className="text-white">{temp}°C</strong>.
               </p>
             </div>
           ) : null}
@@ -205,8 +270,10 @@ export const PredictionDemo = () => {
           type="button"
           onClick={handleAction}
           disabled={isLoading}
-          className={`min-h-11 rounded-lg px-5 py-2.5 font-semibold text-white transition-colors disabled:opacity-50 ${
-            showResult ? 'border border-white/20 hover:bg-white/5' : 'bg-primaryDark hover:bg-blue-800'
+          className={`w-full sm:w-auto min-h-12 rounded-xl px-6 py-3 font-semibold text-white transition-all shadow-lg active:scale-98 disabled:opacity-50 ${
+            showResult 
+              ? 'btn-action-secondary' 
+              : 'btn-action-primary'
           }`}
         >
           {showResult ? 'Modificar parámetros' : error ? 'Reintentar predicción' : 'Calcular predicción con XGBoost'}
