@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
@@ -20,14 +21,14 @@ app.add_middleware(
 
 Instrumentator().instrument(app).expose(app)
 
-# Service mapping dictionary
+# Service mapping dictionary with Railway / Cloud environment variable support
 SERVICES = {
-    "identity": "http://identity-service:8000",
-    "optimize": "http://optimization-engine:8000",
-    "predict": "http://prediction-engine:8000",
-    "simulate": "http://simulation-engine:8000",
-    "rules": "http://rules-engine:8000",
-    "chat": "http://knowledge-engine:8000",
+    "identity": os.getenv("IDENTITY_SERVICE_URL", "http://identity-service:8000"),
+    "optimize": os.getenv("OPTIMIZATION_ENGINE_URL", os.getenv("OPTIMIZATION_SERVICE_URL", "http://optimization-engine:8000")),
+    "predict": os.getenv("PREDICTION_ENGINE_URL", os.getenv("PREDICTION_SERVICE_URL", "http://prediction-engine:8000")),
+    "simulate": os.getenv("SIMULATION_ENGINE_URL", os.getenv("SIMULATION_SERVICE_URL", "http://simulation-engine:8000")),
+    "rules": os.getenv("RULES_ENGINE_URL", os.getenv("RULES_SERVICE_URL", "http://rules-engine:8000")),
+    "chat": os.getenv("KNOWLEDGE_ENGINE_URL", os.getenv("KNOWLEDGE_SERVICE_URL", "http://knowledge-engine:8000")),
 }
 
 @app.get("/health")
@@ -43,7 +44,8 @@ async def gateway(request: Request, service: str, path: str):
     if service not in SERVICES:
         raise HTTPException(status_code=404, detail=f"Servicio '{service}' no encontrado en el gateway")
 
-    target_url = f"{SERVICES[service]}/api/v1/{service}/{path}"
+    base_url = SERVICES[service].rstrip("/")
+    target_url = f"{base_url}/api/v1/{service}/{path}"
     
     # We create an async client per request here for simplicity. 
     # For production, a shared client pool is recommended.

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { API_ENDPOINTS } from '../config/api';
 import { 
   Loader2, 
   TrendingUp, 
@@ -68,7 +69,7 @@ export const SimulationDemo = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await axios.post('http://localhost:8000/api/v1/simulate/montecarlo', {
+      const response = await axios.post(API_ENDPOINTS.simulation.montecarlo, {
         expected_revenue: Number(expectedRevenue),
         revenue_std: Number(revenueStd),
         expected_cost: Number(expectedCost),

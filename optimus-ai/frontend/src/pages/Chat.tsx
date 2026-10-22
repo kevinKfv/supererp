@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { API_ENDPOINTS } from '../config/api';
 import { 
   Send, 
   Bot, 
@@ -32,7 +33,7 @@ export const Chat = () => {
   const requestIntent = async (text: string) => {
     setIsLoading(true);
     try {
-      const response = await axios.post('http://localhost:8000/api/v1/chat/intent', {
+      const response = await axios.post(API_ENDPOINTS.chat.intent, {
         user_input: text,
       });
       setMessages((previous) => [

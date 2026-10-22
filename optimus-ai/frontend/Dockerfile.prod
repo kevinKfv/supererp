@@ -1,0 +1,29 @@
+# Etapa de construcción
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+COPY package.json package-lock.json* ./
+RUN npm install
+
+COPY . .
+
+# Argumento para inyectar la URL pública del API Gateway durante el build de Vite
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
+RUN npm run build
+
+# Etapa de ejecución en producción
+FROM node:20-alpine
+
+WORKDIR /app
+
+RUN npm install -g serve
+
+COPY --from=builder /app/dist ./dist
+
+# Puerto dinámico asignado por Railway ($PORT) o 5173 por defecto
+EXPOSE 5173
+
+CMD ["sh", "-c", "serve -s dist -l ${PORT:-5173}"]

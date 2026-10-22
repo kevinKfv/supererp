@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import type { ClipboardEvent, FormEvent } from 'react';
 import axios from 'axios';
 import { Loader2, Info, FileSpreadsheet, Sparkles, Layers, Users, Calculator } from 'lucide-react';
+import { API_ENDPOINTS } from '../config/api';
 
 type Assignment = { worker: number; task: number; cost: number };
 type SubmittedMatrix = {
@@ -172,7 +173,7 @@ export const OptimizationDemo = () => {
       if (!active || inFlight) return;
       inFlight = true;
       try {
-        const response = await axios.get('http://localhost:8000/api/v1/optimize/status/' + task.id, {
+        const response = await axios.get(API_ENDPOINTS.optimization.status(task.id), {
           signal: controller.signal,
         });
         if (!active) return;
@@ -546,7 +547,7 @@ export const OptimizationDemo = () => {
     try {
       const costs = matrix.map((row, worker) => row.map((value, task) => allowed[worker][task] ? Number(value) : 0));
       const submitted = { workerNames: workerNames.map((name) => name.trim()), taskNames: taskNames.map((name) => name.trim()), costs, allowed, unit: unitName.trim(), currentAssignment: hasCurrentAssignment ? currentAssignment.map(Number) : null };
-      const response = await axios.post('http://localhost:8000/api/v1/optimize/assignment', {
+      const response = await axios.post(API_ENDPOINTS.optimization.assignment, {
         costs,
         allowed,
         context: { workerNames: submitted.workerNames, taskNames: submitted.taskNames, unit: submitted.unit, currentAssignment: submitted.currentAssignment },

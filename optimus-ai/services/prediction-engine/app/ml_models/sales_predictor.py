@@ -41,8 +41,9 @@ def predict_sales(features: list) -> list:
     """
     if not os.path.exists(LOCAL_MODEL_PATH):
         success = download_model(MODEL_FILENAME, LOCAL_MODEL_PATH)
-        if not success:
-            raise Exception("Modelo no encontrado en MinIO ni localmente. Debes entrenarlo primero.")
+        if not success or not os.path.exists(LOCAL_MODEL_PATH):
+            # Auto-entrenar con modelo inicial para garantizar que la API siempre responda
+            train_sales_model(None)
             
     model = joblib.load(LOCAL_MODEL_PATH)
     predictions = model.predict(np.array(features))

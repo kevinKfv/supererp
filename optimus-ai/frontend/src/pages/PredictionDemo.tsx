@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { API_ENDPOINTS } from '../config/api';
 import { 
   Loader2, 
   Info, 
@@ -33,7 +34,7 @@ export const PredictionDemo = () => {
     setError(null);
     setPredictionResult(null);
     try {
-      const response = await axios.post('http://localhost:8000/api/v1/predict/predict', {
+      const response = await axios.post(API_ENDPOINTS.prediction.predict, {
         features: [[Number(price), Number(marketing), Number(temp)]],
       });
       const prediction = response.data?.predictions?.[0];

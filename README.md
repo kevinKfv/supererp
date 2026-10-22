@@ -34,7 +34,8 @@ Una vez que todos los contenedores estén UP (puede tardar 1–2 minutos):
 | 📡 **Prometheus** | http://localhost:9090 | — | — |
 | 🔵 **Qdrant Dashboard** | http://localhost:6333/dashboard | — | — |
 
-> 📄 Lista completa de credenciales: **[CUENTAS_Y_USUARIOS.md](CUENTAS_Y_USUARIOS.md)**
+> 📄 Lista completa de credenciales: **[CUENTAS_Y_USUARIOS.md](CUENTAS_Y_USUARIOS.md)**  
+> ☁️ Despliegue en la nube: **[GUIA_DESPLIEGUE_RAILWAY.md](GUIA_DESPLIEGUE_RAILWAY.md)** (Paso a paso para Railway)
 
 ---
 

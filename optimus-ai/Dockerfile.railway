@@ -1,0 +1,41 @@
+# Dockerfile optimizado para Railway (Backend Unificado de OptimusAI)
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Instalar dependencias del sistema necesarias para compilar y ejecutar
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    libpq-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copiar requirements de cada microservicio
+COPY services/gateway-service/requirements.txt ./req_gateway.txt
+COPY services/identity-service/requirements.txt ./req_identity.txt
+COPY services/optimization-engine/requirements.txt ./req_optimize.txt
+COPY services/prediction-engine/requirements.txt ./req_predict.txt
+COPY services/simulation-engine/requirements.txt ./req_simulate.txt
+COPY services/rules-engine/requirements.txt ./req_rules.txt
+COPY services/knowledge-engine/requirements.txt ./req_knowledge.txt
+
+# Instalar todas las dependencias
+RUN pip install --no-cache-dir \
+    -r req_gateway.txt \
+    -r req_identity.txt \
+    -r req_optimize.txt \
+    -r req_predict.txt \
+    -r req_simulate.txt \
+    -r req_rules.txt \
+    -r req_knowledge.txt
+
+# Copiar el código fuente completo de los servicios
+COPY services ./services
+COPY start_railway.sh ./start_railway.sh
+RUN chmod +x ./start_railway.sh
+
+# Exponer el puerto HTTP
+EXPOSE 8000
+
+# Punto de entrada para Railway
+CMD ["./start_railway.sh"]

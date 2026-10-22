@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { API_ENDPOINTS } from '../config/api';
 import { 
   Loader2, 
   Sliders, 
@@ -155,7 +156,7 @@ export const RulesDemo = () => {
         return;
       }
 
-      const response = await axios.post('http://localhost:8000/api/v1/rules/evaluate/', {
+      const response = await axios.post(API_ENDPOINTS.rules.evaluate, {
         rules: parsedRules,
         facts: parsedFacts,
       });

@@ -15,8 +15,9 @@ import {
   Lock
 } from "lucide-react";
 
-const API_URL = (import.meta as any).env?.VITE_API_URL ?? "http://localhost:8000";
-const LOGIN_ENDPOINT = `${API_URL}/api/v1/identity/auth/login`;
+import { API_ENDPOINTS } from "../config/api";
+
+const LOGIN_ENDPOINT = API_ENDPOINTS.identity.login;
 
 export const Login = () => {
   const navigate = useNavigate();
