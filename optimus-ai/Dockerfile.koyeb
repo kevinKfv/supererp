@@ -1,0 +1,40 @@
+# Dockerfile All-in-One optimizado para Koyeb (Backend + Redis embebido)
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Instalar dependencias del sistema y Redis server embebido
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    libpq-dev \
+    curl \
+    redis-server \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copiar requirements de cada microservicio
+COPY services/gateway-service/requirements.txt ./req_gateway.txt
+COPY services/identity-service/requirements.txt ./req_identity.txt
+COPY services/optimization-engine/requirements.txt ./req_optimize.txt
+COPY services/prediction-engine/requirements.txt ./req_predict.txt
+COPY services/simulation-engine/requirements.txt ./req_simulate.txt
+COPY services/rules-engine/requirements.txt ./req_rules.txt
+COPY services/knowledge-engine/requirements.txt ./req_knowledge.txt
+
+# Instalar dependencias Python
+RUN pip install --no-cache-dir \
+    -r req_gateway.txt \
+    -r req_identity.txt \
+    -r req_optimize.txt \
+    -r req_predict.txt \
+    -r req_simulate.txt \
+    -r req_rules.txt \
+    -r req_knowledge.txt
+
+# Copiar el código fuente completo
+COPY services ./services
+COPY start_koyeb.sh ./start_koyeb.sh
+RUN chmod +x ./start_koyeb.sh
+
+EXPOSE 8000
+
+CMD ["./start_koyeb.sh"]

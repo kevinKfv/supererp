@@ -1,7 +1,12 @@
 #!/bin/sh
 set -e
 
-echo "=== Iniciando Backend Unificado de OptimusAI para Railway ==="
+# Iniciar Redis local en background si no se provee uno externo
+if [ -z "$REDIS_URL" ] || echo "$REDIS_URL" | grep -q "localhost\|127.0.0.1"; then
+    echo "[0/8] Iniciando Redis Server embebido..."
+    redis-server --daemonize yes --protected-mode no --port 6379 || true
+    export REDIS_URL="redis://127.0.0.1:6379/0"
+fi
 
 # 1. Iniciar Identity Service en puerto 8001
 echo "[1/7] Iniciando Identity Service (puerto 8001)..."

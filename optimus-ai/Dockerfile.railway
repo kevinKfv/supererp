@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     libpq-dev \
     curl \
+    redis-server \
     && rm -rf /var/lib/apt/lists/*
 
 # Copiar requirements de cada microservicio
