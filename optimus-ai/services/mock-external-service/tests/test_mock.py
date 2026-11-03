@@ -28,3 +28,4 @@ def test_rest_external_quote():
     response = client.get("/rest/external-quote")
     assert response.status_code == 200
     assert response.json()["status"] == "APPROVED"
+

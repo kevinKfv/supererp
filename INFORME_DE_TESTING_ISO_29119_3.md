@@ -196,3 +196,4 @@
    *Prueba que lo habría atrapado:* Un test de contrato OpenAPI / Schemathesis con validación de schema de errores 4xx/5xx.
 3. **Defecto 3 (Timeout bloqueante en llamadas SOAP externas):** Inicialmente las peticiones HTTP externas no tenían timeout explícito, lo que en situaciones de latencia alta congelaba los workers.  
    *Prueba que lo habría atrapado:* Una prueba de resiliencia con simulación de retardo artificial de 6 segundos en entorno de CI.
+

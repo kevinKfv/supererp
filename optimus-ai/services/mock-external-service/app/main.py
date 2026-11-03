@@ -86,3 +86,4 @@ async def rest_external_quote(delay: float = 0.0, error: int = 200):
         "valid_until": "2026-11-10T23:59:59Z",
         "status": "APPROVED"
     }
+

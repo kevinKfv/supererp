@@ -32,3 +32,4 @@ def transition_task_state(current_state: TaskState, new_state: TaskState) -> Tas
             detail=f"Transición inválida de estado: No se permite cambiar de '{current_state.value}' a '{new_state.value}'."
         )
     return new_state
+
