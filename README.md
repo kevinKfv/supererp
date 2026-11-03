@@ -14,28 +14,62 @@ OptimusAI es un motor de decisiones avanzado de nivel enterprise diseñado para 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalado y corriendo
 - Puertos libres: 5173, 8000–8006, 3000, 5432, 6333, 6379, 9000–9001, 9090, 9092
 
-### Levantar el sistema completo
+### Levantar el sistema completo (Criterio G1 - Build en 1 comando ≤ 15 min)
 ```bash
 git clone https://github.com/kevinKfv/supererp.git
-cd supererp/optimus-ai
+cd supererp
 docker compose up -d --build
 ```
+> Esto inicia automáticamente la App, Bases de datos (PostgreSQL, Redis, Qdrant, MinIO), Brokers (Kafka, Zookeeper), Mocks de servicios externos SOAP/REST y Observabilidad (Prometheus, Grafana).
 
 ### Acceder al sistema
-Una vez que todos los contenedores estén UP (puede tardar 1–2 minutos):
+Una vez que todos los contenedores estén UP (tarda 1–2 minutos):
 
-| Interfaz | URL | Usuario | Contraseña |
+| Interfaz | URL | Credenciales Demo (.env.example) | Propósito |
 | :--- | :--- | :--- | :--- |
-| 🌐 **Frontend (Login)** | http://localhost:5173/login | — | — |
-| 🔑 **Admin del sistema** | vía Login UI | `admin_supererp` | `SuperSecretPassword123` |
-| 📊 **Swagger / API Docs** | http://localhost:8000/docs | — | — |
-| 📈 **Grafana** | http://localhost:3000 | `admin` | `admin` |
-| 🗄️ **MinIO Console** | http://localhost:9001 | `optimus_admin` | `optimus_password` |
-| 📡 **Prometheus** | http://localhost:9090 | — | — |
-| 🔵 **Qdrant Dashboard** | http://localhost:6333/dashboard | — | — |
+| 🌐 **Frontend (Login)** | http://localhost:5173/login | — | Panel de control web interactivo |
+| 🔑 **Admin del sistema** | vía Login UI o API | `admin_supererp` / `SuperSecretPassword123` | Administrador en PostgreSQL / JWT |
+| 📊 **Swagger / API Docs** | http://localhost:8000/docs | — | Especificación interactiva OpenAPI |
+| 📈 **Grafana** | http://localhost:3000 | `admin` / `admin` | Telemetría y dashboards |
+| 🗄️ **MinIO Console** | http://localhost:9001 | `optimus_admin` / `optimus_password` | Registro de artefactos y modelos ML |
+| 📡 **Prometheus** | http://localhost:9090 | — | Scraping de métricas de rendimiento |
+| 🔵 **Qdrant Dashboard** | http://localhost:6333/dashboard | — | Base de datos vectorial |
 
-> 📄 Lista completa de credenciales: **[CUENTAS_Y_USUARIOS.md](CUENTAS_Y_USUARIOS.md)**  
-> ☁️ Despliegue en la nube: **[GUIA_DESPLIEGUE_RAILWAY.md](GUIA_DESPLIEGUE_RAILWAY.md)** (Paso a paso para Railway)
+> 📄 Informe de Calidad Formal ISO 29119-3: **[INFORME_DE_TESTING_ISO_29119_3.md](INFORME_DE_TESTING_ISO_29119_3.md)**  
+> 🧪 Plan de Pruebas: **[TESTING_PLAN.md](TESTING_PLAN.md)**  
+> ☁️ Despliegue en la nube: **[GUIA_DESPLIEGUE_RAILWAY.md](GUIA_DESPLIEGUE_RAILWAY.md)** | **[GUIA_DESPLIEGUE_KOYEB.md](GUIA_DESPLIEGUE_KOYEB.md)**
+
+---
+
+## 🧪 Ejecución de Pruebas de Calidad (Clase 15 - TP Obligatorio)
+
+### 1. Pruebas Unitarias y de Integración con Cobertura (Eje B ≥ 80%)
+```bash
+# Ejecución directa en contenedores Docker:
+docker exec optimus_identity pytest tests/ -v --cov=app --cov-branch
+docker exec optimus_optimization_engine pytest tests/ -v --cov=app --cov-branch
+docker exec optimus_prediction_engine pytest tests/ -v --cov=app --cov-branch
+docker exec optimus_simulation_engine pytest tests/ -v --cov=app --cov-branch
+docker exec optimus_rules_engine pytest tests/ -v --cov=app --cov-branch
+docker exec optimus_knowledge_engine pytest tests/ -v --cov=app --cov-branch
+docker exec optimus_gateway pytest tests/ -v --cov=app --cov-branch
+docker exec optimus_mock_external pytest tests/ -v --cov=app --cov-branch
+```
+
+### 2. Pruebas de Frontend (Vitest)
+```bash
+docker exec optimus_frontend npm run test
+```
+
+### 3. Pruebas de Carga (k6 - 50 VUs continuos durante 5 min, p95 < 500ms)
+```bash
+k6 run tests/load/k6_stress_test_50vus_5min.js
+```
+
+### 4. Pruebas de API y Contrato (Newman / Postman)
+```bash
+newman run tests/api/optimus_api_collection.json --env-var "baseUrl=http://localhost:8000"
+```
 
 ---
 

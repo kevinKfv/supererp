@@ -6,8 +6,19 @@ import json
 from uuid import uuid4
 from app.application.tasks import optimize_assignment_task, celery_app
 from celery.result import AsyncResult
+from app.domain.state_machine import TaskState, transition_task_state
 
 router = APIRouter()
+
+class StateTransitionRequest(BaseModel):
+    current_state: TaskState
+    new_state: TaskState
+
+@router.post("/state/transition")
+async def execute_state_transition(req: StateTransitionRequest):
+    """Valida la máquina de estados de la entidad central (Eje B: 409 Conflict)"""
+    result = transition_task_state(req.current_state, req.new_state)
+    return {"status": "success", "current_state": result.value}
 
 class AssignmentContext(BaseModel):
     workerNames: List[str]

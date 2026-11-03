@@ -185,6 +185,16 @@ services:
     networks:
       - optimus_network
 
+  mock-external-service:
+    build:
+      context: ./services/mock-external-service
+      dockerfile: ../Dockerfile
+    container_name: optimus_mock_external
+    ports:
+      - "8007:8000"
+    networks:
+      - optimus_network
+
   frontend:
     build:
       context: ./frontend

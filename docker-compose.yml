@@ -1,0 +1,263 @@
+version: '3.8'
+
+# ==============================================================================
+# OptimusAI / SuperERP - Root Docker Compose File (Criterio G1 de Admisibilidad)
+# ==============================================================================
+# Permite levantar el sistema completo (App, Bases, Broker, Mocks SOAP/REST)
+# con un ÚNICO comando: docker compose up -d --build
+# ==============================================================================
+
+services:
+  gateway-service:
+    build: 
+      context: ./optimus-ai/services/gateway-service
+      dockerfile: ../Dockerfile
+    container_name: optimus_gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - IDENTITY_SERVICE_URL=http://identity-service:8000
+      - OPTIMIZATION_ENGINE_URL=http://optimization-engine:8000
+      - PREDICTION_ENGINE_URL=http://prediction-engine:8000
+      - SIMULATION_ENGINE_URL=http://simulation-engine:8000
+      - RULES_ENGINE_URL=http://rules-engine:8000
+      - KNOWLEDGE_ENGINE_URL=http://knowledge-engine:8000
+      - MOCK_EXTERNAL_SERVICE_URL=http://mock-external-service:8000
+    networks:
+      - optimus_network
+    depends_on:
+      - identity-service
+      - optimization-engine
+      - prediction-engine
+      - simulation-engine
+      - rules-engine
+      - knowledge-engine
+      - mock-external-service
+
+  identity-service:
+    build: 
+      context: ./optimus-ai/services/identity-service
+      dockerfile: ../Dockerfile
+    container_name: optimus_identity
+    ports:
+      - "8001:8000"
+    environment:
+      DATABASE_URL: "postgresql://optimus:optimus_password@postgres:5432/optimus_identity"
+      SECRET_KEY: "dev-insecure-secret-key-change-in-production"
+    depends_on:
+      - postgres
+    networks:
+      - optimus_network
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: optimus_postgres
+    environment:
+      POSTGRES_USER: optimus
+      POSTGRES_PASSWORD: optimus_password
+      POSTGRES_DB: optimus_identity
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - optimus_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: optimus_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - optimus_network
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    container_name: optimus_zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - optimus_network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: optimus_kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - optimus_network
+
+  minio:
+    image: cgr.dev/chainguard/minio:latest
+    container_name: optimus_minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: optimus_admin
+      MINIO_ROOT_PASSWORD: optimus_password
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - optimus_network
+
+  optimization-engine:
+    build: 
+      context: ./optimus-ai/services/optimization-engine
+      dockerfile: ../Dockerfile
+    container_name: optimus_optimization_engine
+    ports:
+      - "8002:8000"
+    environment:
+      REDIS_URL: "redis://redis:6379/0"
+    depends_on:
+      - redis
+    networks:
+      - optimus_network
+
+  optimization-worker:
+    build: 
+      context: ./optimus-ai/services/optimization-engine
+      dockerfile: ../Dockerfile
+    container_name: optimus_optimization_worker
+    command: celery -A app.worker:celery_app worker --loglevel=info
+    environment:
+      REDIS_URL: "redis://redis:6379/0"
+    depends_on:
+      - redis
+    networks:
+      - optimus_network
+
+  prediction-engine:
+    build: 
+      context: ./optimus-ai/services/prediction-engine
+      dockerfile: ../Dockerfile
+    container_name: optimus_prediction_engine
+    ports:
+      - "8003:8000"
+    environment:
+      MINIO_URL: "minio:9000"
+      MINIO_ACCESS_KEY: "optimus_admin"
+      MINIO_SECRET_KEY: "optimus_password"
+    depends_on:
+      - minio
+    networks:
+      - optimus_network
+
+  simulation-engine:
+    build: 
+      context: ./optimus-ai/services/simulation-engine
+      dockerfile: ../Dockerfile
+    container_name: optimus_simulation_engine
+    ports:
+      - "8004:8000"
+    networks:
+      - optimus_network
+
+  rules-engine:
+    build: 
+      context: ./optimus-ai/services/rules-engine
+      dockerfile: ../Dockerfile
+    container_name: optimus_rules_engine
+    ports:
+      - "8005:8000"
+    networks:
+      - optimus_network
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: optimus_qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    networks:
+      - optimus_network
+
+  knowledge-engine:
+    build: 
+      context: ./optimus-ai/services/knowledge-engine
+      dockerfile: ../Dockerfile
+    container_name: optimus_knowledge_engine
+    ports:
+      - "8006:8000"
+    depends_on:
+      - qdrant
+    networks:
+      - optimus_network
+
+  mock-external-service:
+    build:
+      context: ./optimus-ai/services/mock-external-service
+      dockerfile: ../Dockerfile
+    container_name: optimus_mock_external
+    ports:
+      - "8007:8000"
+    networks:
+      - optimus_network
+
+  frontend:
+    build:
+      context: ./optimus-ai/frontend
+    container_name: optimus_frontend
+    ports:
+      - "5173:5173"
+    networks:
+      - optimus_network
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - GATEWAY_URL=http://gateway-service:8000
+    volumes:
+      - ./optimus-ai/frontend:/app
+      - /app/node_modules
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: optimus_prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./optimus-ai/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - optimus_network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: optimus_grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - optimus_network
+    depends_on:
+      - prometheus
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
+  qdrant_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  optimus_network:
+    driver: bridge

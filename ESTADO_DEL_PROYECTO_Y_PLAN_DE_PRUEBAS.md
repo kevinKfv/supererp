@@ -1,4 +1,4 @@
-# OptimusAI / SuperERP — Estado del Proyecto, Pendientes y Guía de Pruebas
+﻿# OptimusAI / SuperERP — Estado del Proyecto, Pendientes y Guía de Pruebas
 
 > **Fecha de Actualización:** Octubre 2026
 > **Estado General:** ✅ **Proyecto 100% Completo y Operativo.**
@@ -120,7 +120,7 @@ Start-Sleep 3
 Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/v1/optimize/status/$($res.task_id)" | ConvertTo-Json -Depth 5
 
 # Predicción
-Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/v1/predict/predict" -Method Post -ContentType "application/json" -Body '{"features":[[100.0,80.0,25.0]]}' | ConvertTo-Json
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/v1/predict/predict" -Method Post -bContentType "application/json" -Body '{"features":[[100.0,80.0,25.0]]}' | ConvertTo-Json
 
 # Simulación
 Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/v1/simulate/montecarlo" -Method Post -ContentType "application/json" -Body '{"expected_revenue":100000,"revenue_std":15000,"expected_cost":70000,"cost_std":10000,"iterations":10000}' | ConvertTo-Json

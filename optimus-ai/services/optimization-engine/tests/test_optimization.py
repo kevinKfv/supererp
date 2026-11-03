@@ -61,3 +61,45 @@ def test_solve_assignment_infeasible():
     ]
     result = solve_assignment_problem(costs, allowed)
     assert result["status"] == "INFEASIBLE"
+
+
+# ==============================================================================
+# PRUEBAS DEL PATRÓN STATE PARA ENTIDAD CENTRAL (EJE B - RÚBRICA CÁTEDRA)
+# ==============================================================================
+from fastapi.testclient import TestClient
+from app.main import app
+from app.domain.state_machine import TaskState, transition_task_state
+from fastapi import HTTPException
+
+client = TestClient(app)
+
+def test_state_transition_valid_path():
+    """Valida transiciones correctas: DRAFT -> QUEUED -> PROCESSING -> COMPLETED -> ARCHIVED"""
+    s1 = transition_task_state(TaskState.DRAFT, TaskState.QUEUED)
+    assert s1 == TaskState.QUEUED
+    s2 = transition_task_state(s1, TaskState.PROCESSING)
+    assert s2 == TaskState.PROCESSING
+    s3 = transition_task_state(s2, TaskState.COMPLETED)
+    assert s3 == TaskState.COMPLETED
+    s4 = transition_task_state(s3, TaskState.ARCHIVED)
+    assert s4 == TaskState.ARCHIVED
+
+@pytest.mark.parametrize("current_state, invalid_new_state", [
+    (TaskState.COMPLETED, TaskState.QUEUED),      # No se puede reencolar una tarea completada
+    (TaskState.COMPLETED, TaskState.PROCESSING),  # No se puede volver a procesar
+    (TaskState.ARCHIVED, TaskState.DRAFT),        # Estado terminal no puede volver a borrador
+    (TaskState.ARCHIVED, TaskState.COMPLETED),    # Estado terminal inmutable
+    (TaskState.CANCELLED, TaskState.COMPLETED),   # Cancelada no puede completarse
+    (TaskState.DRAFT, TaskState.COMPLETED),       # No puede saltar directamente a completada
+    (TaskState.DRAFT, TaskState.ARCHIVED),        # No puede archivarse sin procesar/cancelar
+])
+def test_state_transition_invalid_returns_409(current_state, invalid_new_state):
+    """
+    Rúbrica Eje B: 'Toda transición inválida probada y devuelve 409'
+    """
+    response = client.post("/api/v1/optimize/state/transition", json={
+        "current_state": current_state.value,
+        "new_state": invalid_new_state.value
+    })
+    assert response.status_code == 409
+    assert "Transición inválida" in response.json()["detail"]
